@@ -48,6 +48,8 @@ class GenerateResultsReports(Wizard):
             Button('Generate Validation', 'actualise_graph_reports', 'tryton-ok',
                 True),
             ])
+    
+    BATCH_SIZE = 10
      
     def default_start(self, fields):
         today = date.today()
@@ -80,28 +82,28 @@ class GenerateResultsReports(Wizard):
         for Facture in Factures:
             if Facture.number not in listes_factures:
                 listes_factures.append(Facture.number)
-
+        
         for Facture in Factures:
             if Facture.reference in listes_factures:
                 listes_factures.remove(Facture.reference)
                 listes_factures.remove(Facture.number)
 
-            dict_assurance = {}
-            for facture_number in listes_factures:
-                facture = Invoices.search([('number', '=', facture_number)], limit=1)
-                if not facture:
-                    continue
-                assurance = facture[0].party.sale_price_list
-                if assurance.id in dict_assurance:
-                    dict_assurance[assurance.id]['total_vente'] += facture[0].montant_assurance
-                else:
-                    dict_assurance[assurance.id] = {
-                        'assurance': assurance.id,  # nom réel du champ Many2One
-                        'total_vente': facture[0].montant_assurance
-                    }
+        dict_assurance = {}
+        for facture_number in listes_factures:
+            facture = Invoices.search([('number', '=', facture_number)], limit=1)
+            if not facture:
+                continue
+            assurance = facture[0].party.sale_price_list
+            if assurance.id in dict_assurance:
+                dict_assurance[assurance.id]['total_vente'] += facture[0].montant_assurance
+            else:
+                dict_assurance[assurance.id] = {
+                    'assurance': assurance.id,  # nom réel du champ Many2One
+                    'total_vente': facture[0].montant_assurance
+                }
 
-            list_of_save_elements = list(dict_assurance.values())
-            Ventes_Assurance.create(list_of_save_elements)
+        list_of_save_elements = list(dict_assurance.values())
+        Ventes_Assurance.create(list_of_save_elements)
 
 
         
