@@ -97,11 +97,11 @@ class GenerateResultsReports(Wizard):
             if not facture:
                 continue
             assurance = facture[0].party.sale_price_list
-            if assurance.sale_price_list.name in dict_assurance:
+            if assurance.name in dict_assurance:
                 dict_assurance[assurance.id]['total_vente'] += facture[0].montant_assurance
             else:
                 dict_assurance[assurance.id] = {
-                    'assurance': assurance.sale_price_list.name,  # nom réel du champ Many2One
+                    'assurance': assurance.name,  # nom réel du champ Many2One
                     'total_vente': facture[0].montant_assurance
                 }
 
