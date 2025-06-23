@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<form>
+    <separator string="Remplissez les informations Nécessaires."
+        colspan="4" id="test_ask_element_actualize"/>
+    <newline/>
+    <separator string="Elements Actualisations" colspan="6"
+        id="elements_acutalize"/>
+
+    <label name="date_debut"/>
+    <field name="date_debut"/>
+    <label name="date_fin"/>
+    <field name="date_fin"/>
+    <label name="vente_assurance"/>
+    <field name="vente_assurance"/>
+</form>

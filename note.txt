@@ -1,0 +1,36 @@
+Comment Fonctionnera les Dashboard de manières opérationnelles :
+
+Nous avons créer une table qui comportera la plupart pour ne pas dire la 
+totalité des champs qui seront utilisés dans le dashboard.
+
+1. Recenser le minimal des éléments à mettre dans le tableau de bords.
+2. Créer une classe ModelSQL avec ses champs.
+3. Faire un wizard qui sauvegarde les éléments dans la classe.
+
+
+
+---------------------------------------------------------------------------
+
+Une autre possibilité :
+
+Le dashboard contient plusieurs éléments certainement des tableaux et graph.
+
+Pour chaque tableau faire une classe et son wizard associée.
+
+Un wizard général qui aura un gens de sélection ou une case à cocher.
+
+En fait un wizard pour la totalité des champs requis.
+
+Des fonctions maintenant en fonction des champs chochés dans le wizard 
+déclenché.
+
+Dans le wizard, Nous aurons :
+    - Les différentes dates (start_date, end_date)
+    - Les cases des différents cas à cocher :
+        + Par exemple synthèses des ventes totale par assurance
+        + Par exemple nombr de factures sur une période
+        + Facture crédit > Correspondance Facture Normale
+        + Synthèse des ventes Totale
+
+
+

@@ -1,0 +1,33 @@
+
+<tryton>
+   <data>
+        <menuitem
+            name="Rapport"
+            sequence="20"
+            id="menu_rapport"/>
+
+        <record model="ir.ui.view" id="ventes_assurance_view_list2">
+            <field name="model">ventes.assurances</field>
+            <field name="type">graph</field>
+            <field name="name">ventes_assurance_list</field>
+        </record>
+
+        <record model="ir.action.act_window" id="act_syntheses_assurances_form2">
+         <field name="name">Syntheses des Ventes par Assurances</field>
+         <field name="res_model">ventes.assurances</field>
+        </record>
+
+        <record model="ir.action.act_window.view" id="act_syntheses_assurances_form_view12">
+            <field name="sequence" eval="10"/>
+            <field name="view" ref="ventes_assurance_view_list2"/>
+            <field name="act_window" ref="act_syntheses_assurances_form2"/>
+        </record>
+    
+        <menuitem
+            parent="menu_rapport"
+            action="act_syntheses_assurances_form2"
+            sequence="10"
+            id="menu_act_syntheses_assurances_form"/>
+
+   </data>
+</tryton>

@@ -1,0 +1,8 @@
+<graph color="green" type="vbar">
+  <x>
+      <field name="assurance"/>
+  </x>
+  <y>
+      <field name="total_vente"/>
+  </y>
+</graph>
