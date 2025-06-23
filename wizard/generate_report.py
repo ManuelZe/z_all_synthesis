@@ -93,11 +93,11 @@ class GenerateResultsReports(Wizard):
                     continue
                 assurance = facture[0].party.sale_price_list
                 if assurance.id in dict_assurance:
-                    dict_assurance[assurance.id]['montant'] += facture[0].montant_assurance
+                    dict_assurance[assurance.id]['total_vente'] += facture[0].montant_assurance
                 else:
                     dict_assurance[assurance.id] = {
                         'assurance': assurance.id,  # nom réel du champ Many2One
-                        'montant': facture[0].montant_assurance
+                        'total_vente': facture[0].montant_assurance
                     }
 
             list_of_save_elements = list(dict_assurance.values())
