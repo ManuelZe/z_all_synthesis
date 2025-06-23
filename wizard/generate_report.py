@@ -76,6 +76,9 @@ class GenerateResultsReports(Wizard):
         listes_factures = []
 
         Ventes_Assurance = Pool().get("ventes.assurances")
+        Ventes_ass = Ventes_Assurance.search([])
+        Ventes_Assurance.delete(Ventes_ass)
+
         Invoices = Pool().get("account.invoice")
         Factures = Invoices.search([('invoice_date', '>=', start_date), ('invoice_date', '<=', end_date), ('state', 'in', ['paid', 'posted'])])
 
@@ -94,11 +97,11 @@ class GenerateResultsReports(Wizard):
             if not facture:
                 continue
             assurance = facture[0].party.sale_price_list
-            if assurance.id in dict_assurance:
+            if assurance.sale_price_list.name in dict_assurance:
                 dict_assurance[assurance.id]['total_vente'] += facture[0].montant_assurance
             else:
                 dict_assurance[assurance.id] = {
-                    'assurance': assurance.id,  # nom réel du champ Many2One
+                    'assurance': assurance.sale_price_list.name,  # nom réel du champ Many2One
                     'total_vente': facture[0].montant_assurance
                 }
 
