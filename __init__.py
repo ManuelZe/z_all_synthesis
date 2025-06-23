@@ -14,7 +14,7 @@ def register():
         generate_report.Elements_Actualisations,
         module='z_all_synthesis', type_='model')
     Pool.register(
-        generate_report.GenerateResultsRapports,
+        generate_report.GenerateResultsReports,
         module='z_all_synthesis', type_='wizard')
     Pool.register(
         module='z_all_synthesis', type_='report')
