@@ -75,7 +75,7 @@ class GenerateResultsReports(Wizard):
 
         Ventes_Assurance = Pool().get("ventes.assurances")
         Invoices = Pool().get("account.invoice")
-        Factures = Invoices.search([('invoice_date', '>=', start_date), ('invoice_date', '<=', self.end_date), ('state', 'in', ['paid', 'posted'])])
+        Factures = Invoices.search([('invoice_date', '>=', start_date), ('invoice_date', '<=', end_date), ('state', 'in', ['paid', 'posted'])])
 
         for Facture in Factures:
             if Facture.number not in listes_factures:

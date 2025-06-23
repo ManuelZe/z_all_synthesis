@@ -49,7 +49,7 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
     "Classement des ventes Totale par Assurance"
     __name__ = "ventes.assurances"
 
-    assurance = fields.Many2One("product.price_list", "Assurance")
+    assurance = fields.Many2One("party.party.sale_price_list", "Assurance")
     total_vente = fields.Float("Total des ventes.")
 
 class Account_Invoice_KPI(ModelSQL, ModelView):
