@@ -43,7 +43,7 @@ class GenerateResultsReports(Wizard):
     __name__ = 'rapports.refresh.all'
 
     start = StateView('elements.refresh.init',
-        'z_all_synthesis.view_generate_compta_validation_examen', [
+        'z_all_synthesis.view_element_actualisation', [
             Button('Cancel', 'end', 'tryton-cancel'),
             Button('Generate Validation', 'actualise_graph_reports', 'tryton-ok',
                 True),
