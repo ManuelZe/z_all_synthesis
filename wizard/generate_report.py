@@ -101,7 +101,7 @@ class GenerateResultsReports(Wizard):
                 dict_assurance[assurance.id]['total_vente'] += facture[0].montant_assurance
             else:
                 dict_assurance[assurance.id] = {
-                    'assurance': assurance.name,  # nom réel du champ Many2One
+                    'assurance_name': assurance.name,  # nom réel du champ Many2One
                     'total_vente': facture[0].montant_assurance
                 }
 
