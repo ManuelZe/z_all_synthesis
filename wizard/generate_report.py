@@ -63,6 +63,8 @@ class GenerateResultsReports(Wizard):
         if self.start.vente_assurance :
             print("toto")
             self.is_vente_assurance(self.start.date_debut,  self.start.date_fin)
+
+            return 'end'
     
 
     
