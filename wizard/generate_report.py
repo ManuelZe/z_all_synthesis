@@ -88,9 +88,10 @@ class GenerateResultsReports(Wizard):
 
         total_assurance = float(0)
         for facture in listes_factures:
+            facture = Invoices.search([('number', '=', facture)], limit=1)
             dict_assurance = {}
-            ass = facture.party.sale_price_list
-            if facture.party.sale_price_list in dict_assurance.keys():
+            ass = facture[0].party.sale_price_list
+            if ass in dict_assurance.keys():
                 dict_assurance[ass] += facture.montant_assurance 
             else :
                 dict_assurance[ass] = facture.montant_assurance
