@@ -90,11 +90,11 @@ class GenerateResultsReports(Wizard):
         for facture in listes_factures:
             facture = Invoices.search([('number', '=', facture)], limit=1)
             dict_assurance = {}
-            ass = facture[0].party.sale_price_list
-            if ass in dict_assurance.keys():
-                dict_assurance[ass] += facture[0].montant_assurance 
+            assurance = facture[0].party.sale_price_list
+            if assurance.id in dict_assurance.keys():
+                dict_assurance[assurance.id] += facture[0].montant_assurance 
             else :
-                dict_assurance[ass] = facture[0].montant_assurance
+                dict_assurance[assurance.id] = facture[0].montant_assurance
             
             list_of_save_elements.append(dict_assurance)
         
