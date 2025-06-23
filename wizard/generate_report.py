@@ -92,9 +92,9 @@ class GenerateResultsReports(Wizard):
             dict_assurance = {}
             ass = facture[0].party.sale_price_list
             if ass in dict_assurance.keys():
-                dict_assurance[ass] += facture.montant_assurance 
+                dict_assurance[ass] += facture[0].montant_assurance 
             else :
-                dict_assurance[ass] = facture.montant_assurance
+                dict_assurance[ass] = facture[0].montant_assurance
             
             list_of_save_elements.append(dict_assurance)
         
