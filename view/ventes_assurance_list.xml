@@ -1,6 +1,6 @@
 <graph color="green" type="vbar">
   <x>
-      <field name="assurance"/>
+      <field name="assurance_name"/>
   </x>
   <y>
       <field name="total_vente"/>
