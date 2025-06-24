@@ -1,6 +1,16 @@
 <?xml version="1.0"?>
 <board>
-        <label name="date_debut"/>
+    <action name="act_dashboard_syntheses_assurances_form2">
+    <label name="date_debut"/>
+    <label name="date_fin"/>
+    <separator string="Paramètres Additionnels."
+        colspan="4" id="parametres.additionnels"/>
+    <label name="vente_assurance"/>
+    <notebook colspan="6">
+        <label name="assurance_name"/>
+        <label name="total_vente"/>
+    </notebook>
+        <!-- <label name="date_debut"/>
         <field name="date_debut" xexpand="1"/>
         <label name="date_fin"/>
         <field name="date_fin" xexpand="1"/>
@@ -13,7 +23,7 @@
             <field name="assurance_name" widget="selection"/>
             <label name="total_vente"/>
             <field name="total_vente" widget="selection"/>
-        </notebook>
+        </notebook> -->
         <!-- <notebook colspan="6">
             <page string="General">
                 <field name="addresses" mode="form,tree" colspan="4"
