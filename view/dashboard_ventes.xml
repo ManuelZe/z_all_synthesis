@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <board>
-    <form col="4">
         <label name="date_debut"/>
         <field name="date_debut" xexpand="1"/>
         <label name="date_fin"/>
@@ -35,5 +34,4 @@
                 <field name="vat_number"/>
             </page>
         </notebook> -->
-    </form>
 </board>
