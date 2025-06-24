@@ -54,10 +54,6 @@ class Ventes_Assurances_Par_Mois(ModelSQL, ModelView):
 
     total_annuel = fields.Function(fields.Float('Total Annuel'), 'get_total')
 
-    __table_args__ = (
-        Unique('assurance', 'annee', name='unique_assurance_annee'),
-    )
-
     def get_total(self, names):
         result = {}
         for record in self:
