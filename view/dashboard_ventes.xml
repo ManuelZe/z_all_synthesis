@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<board>
+    <form col="4">
+        <label name="date_debut"/>
+        <field name="date_debut" xexpand="1"/>
+        <label name="date_fin"/>
+        <field name="date_fin" xexpand="1"/>
+        <separator string="Paramètres Additionnels."
+            colspan="4" id="parametres.additionnels"/>
+        <label name="vente_assurance"/>
+        <field name="vente_assurance" xexpand="0" width="100"/>
+        <notebook colspan="6">
+            <label name="assurance_name"/>
+            <field name="assurance_name" widget="selection"/>
+            <label name="total_vente"/>
+            <field name="total_vente" widget="selection"/>
+        </notebook>
+        <!-- <notebook colspan="6">
+            <page string="General">
+                <field name="addresses" mode="form,tree" colspan="4"
+                    view_ids="party.address_view_form,party.address_view_tree_sequence"/>
+                <label name="type"/>
+                <field name="type" widget="selection"/>
+                <label name="lang"/>
+                <field name="lang" widget="selection"/>
+                <label name="website"/>
+                <field name="website" widget="url"/>
+                <separator string="Categories" colspan="4"/>
+                <field name="categories" colspan="4"/>
+            </page>
+            <page string="Accounting">
+                <label name="vat_country"/>
+                <field name="vat_country"/>
+                <label name="vat_number"/>
+                <field name="vat_number"/>
+            </page>
+        </notebook> -->
+    </form>
+</board>
