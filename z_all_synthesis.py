@@ -69,8 +69,8 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
         where &= (join_rev.right.id == None)  # i1.reference ≠ i3.number
 
         return join_rev.select(
-            join_ref.left.sale_price_list.name.as_('assurance_name'),
-            Sum(join_ref.left.montant_assurance).as_('total_vente'),
+            join_ref.left.sale_price_list.name,
+            Sum(join_ref.left.montant_assurance),
             where=where,
             group_by=[join_ref.left.sale_price_list.name]
         )
