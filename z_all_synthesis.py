@@ -37,7 +37,7 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
     @classmethod
     def table_query(cls):
 
-        invoice = Pool.get('account.invoice').__table__()
+        invoice = Pool().get('account.invoice').__table__()
 
         i1 = invoice.alias('i1')
         i2 = invoice.alias('i2')
