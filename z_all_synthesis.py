@@ -12,12 +12,13 @@ from datetime import datetime
 from trytond.pool import Pool
 import requests
 from trytond.i18n import gettext
+# from trytond.backend.postgresql.table import Table
 from trytond.model import Workflow, ModelView, ModelSQL, fields, \
     sequence_ordered, Unique, DeactivableMixin, dualmethod, DictSchemaMixin
 from datetime import date
 import requests
 from trytond.transaction import Transaction
-from sql import Select, Join, Literal, Table
+from sql import Select, Join, Literal
 from sql.aggregate import Sum
 
 from trytond.model import fields
