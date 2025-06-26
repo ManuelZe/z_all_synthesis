@@ -39,7 +39,7 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
     @classmethod
     def table_query(cls):
 
-        SalePriceList = Pool().get('sale.price_list')
+        SalePriceList = Pool().get('product.price_list')
         sale_price_list = SalePriceList.__table__()
 
         Invoice = Pool().get('account.invoice')
