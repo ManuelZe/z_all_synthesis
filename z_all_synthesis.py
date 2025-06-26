@@ -39,34 +39,35 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
     @classmethod
     def table_query(cls):
 
-        pool = Pool()
-        invoice = pool.get('account.invoice').__table__()
+        Invoice = Pool().get('account.invoice')
+        invoice = Invoice.__table__()
 
-        # Jointure : facture normale ← facture avoir
-        join_ref = Join(invoice, invoice, 'LEFT')
-        join_ref.condition = join_ref.left.number == join_ref.right.reference
+        print(type(invoice))
+        i1 = invoice
+        i2 = invoice
+        i3 = invoice
 
-        # Jointure : facture normale → est-elle un avoir ?
-        join_rev = Join(join_ref, invoice, 'LEFT')
-        join_rev.condition = join_rev.left.reference == join_rev.right.number
+        # Jointures croisant facture et avoir
+        join_ref = Join(i1, i2, 'LEFT')
+        join_ref.condition = i1.number == i2.reference
 
-        ctx = Transaction().context
+        join_rev = Join(join_ref, i3, 'LEFT')
+        join_rev.condition = join_ref.left.reference == join_rev.right.number
+
+        # Clause de base
         where = Literal(True)
+        ctx = Transaction().context
 
         if ctx.get('start_date'):
-            where &= join_ref.left.invoice_date >= ctx['start_date']
+            where &= i1.invoice_date >= ctx['start_date']
         if ctx.get('end_date'):
-            where &= join_ref.left.invoice_date <= ctx['end_date']
+            where &= i1.invoice_date <= ctx['end_date']
+        where &= i1.state.in_(['paid', 'posted'])
 
-        where &= join_ref.left.state.in_(['paid', 'posted'])
+        # Élimination des factures avec relation crédit/avoir
+        where &= (i2.id == None)  # i1.number ≠ i2.reference
+        where &= (join_rev.right.id == None)  # i1.reference ≠ i3.number
 
-        # Exclusion : factures référencées par un avoir
-        where &= (join_ref.right.id == None)
-
-        # Exclusion : factures étant elles-mêmes des avoirs
-        where &= (join_rev.right.id == None)
-
-        # Agrégation : montant_assurance par assurance
         return join_rev.select(
             join_ref.left.sale_price_list.name.as_('assurance_name'),
             Sum(join_ref.left.montant_assurance).as_('total_vente'),
