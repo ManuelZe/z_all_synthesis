@@ -12,13 +12,14 @@ from datetime import datetime
 from trytond.pool import Pool
 import requests
 from trytond.i18n import gettext
-from trytond.backend.postgresql.table import Table
+# from trytond.backend.postgresql.table import Table
 from trytond.model import Workflow, ModelView, ModelSQL, fields, \
     sequence_ordered, Unique, DeactivableMixin, dualmethod, DictSchemaMixin
 from datetime import date
 import requests
 from trytond.transaction import Transaction
 from sql import Select, Join, Literal
+from sql import Table
 from sql.aggregate import Sum
 
 from trytond.model import fields
@@ -39,8 +40,9 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
     def table_query(cls):
 
         Invoice = Pool().get('account.invoice')
-        invoice = Invoice.__table__()
+        invoice = Table(Invoice)
 
+        print(type(invoice))
         i1 = invoice.alias('i1')
         i2 = invoice.alias('i2')
 
