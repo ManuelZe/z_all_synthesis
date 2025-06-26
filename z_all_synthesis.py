@@ -39,6 +39,9 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
     @classmethod
     def table_query(cls):
 
+        SalePriceList = Pool().get('sale.price_list')
+        sale_price_list = SalePriceList.__table__()
+
         Invoice = Pool().get('account.invoice')
         invoice = Invoice.__table__()
 
@@ -54,6 +57,10 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
         join_rev = Join(join_ref, i3, 'LEFT')
         join_rev.condition = join_ref.left.reference == join_rev.right.number
 
+        # Jointure pour aller chercher sale_price_list.name
+        join_spl = Join(join_ref.left, sale_price_list, 'LEFT')
+        join_spl.condition = join_ref.left.sale_price_list == sale_price_list.id
+
         # Clause de base
         where = Literal(True)
         ctx = Transaction().context
@@ -68,12 +75,12 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
         where &= (i2.id == None)  # i1.number ≠ i2.reference
         where &= (join_rev.right.id == None)  # i1.reference ≠ i3.number
 
-        print(join_ref.left.sale_price_list)
+        print(join_ref.left.sale_price_list.name)
         return join_rev.select(
-            join_ref.left.sale_price_list,
+            join_spl.right.name,
             Sum(join_ref.left.montant_assurance),
             where=where,
-            group_by=[join_ref.left.sale_price_list]
+            group_by=[join_spl.right.name]
         )
 
 
