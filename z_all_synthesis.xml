@@ -29,31 +29,6 @@
             sequence="10"
             id="menu_act_syntheses_assurances_form"/>
 
-        
-        <!-- BOARD -->
-
-        <record model="ir.ui.view" id="dashboard_ventes_assurance_view_list2">
-            <field name="model">general.dashboard</field>
-            <field name="type">board</field>
-            <field name="name">dashboard_ventes</field>
-        </record>
-
-        <record model="ir.action.act_window" id="act_dashboard_syntheses_assurances_form2">
-         <field name="name">Dashboard General</field>
-         <field name="res_model">general.dashboard</field>
-        </record>
-
-        <record model="ir.action.act_window.view" id="act_dashboard_syntheses_assurances_form_view12">
-            <field name="sequence" eval="10"/>
-            <field name="view" ref="dashboard_ventes_assurance_view_list2"/>
-            <field name="act_window" ref="act_dashboard_syntheses_assurances_form2"/>
-        </record>
-    
-        <menuitem
-            parent="menu_rapport"
-            action="act_dashboard_syntheses_assurances_form2"
-            sequence="10"
-            id="menu_act_dashboard_syntheses_assurances_form"/>
 
    </data>
 </tryton>
