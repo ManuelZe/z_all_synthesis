@@ -16,7 +16,9 @@ from trytond.model import Workflow, ModelView, ModelSQL, fields, \
     sequence_ordered, Unique, DeactivableMixin, dualmethod, DictSchemaMixin
 from datetime import date
 import requests
-import json
+from trytond.transaction import Transaction
+from sql import Select, Join, Literal, Table
+from sql.aggregate import Sum
 
 from trytond.model import fields
 from trytond.pool import PoolMeta
@@ -30,6 +32,44 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
 
     assurance_name = fields.Char("Assurance")
     total_vente = fields.Float("Total des ventes.")
+
+
+    @classmethod
+    def table_query(cls):
+
+        invoice = Pool.get('account.invoice').__table__()
+
+        i1 = invoice.alias('i1')
+        i2 = invoice.alias('i2')
+
+        # Jointures croisant facture et avoir
+        join_ref = Join(i1, i2, 'LEFT')
+        join_ref.condition = i1.number == i2.reference
+
+        join_rev = Join(join_ref, invoice.alias('i3'), 'LEFT')
+        join_rev.condition = join_ref.left.reference == join_rev.right.number
+
+        # Clause de base
+        where = Literal(True)
+        ctx = Transaction().context
+
+        if ctx.get('start_date'):
+            where &= i1.invoice_date >= ctx['start_date']
+        if ctx.get('end_date'):
+            where &= i1.invoice_date <= ctx['end_date']
+        where &= i1.state.in_(['paid', 'posted'])
+
+        # Élimination des factures avec relation crédit/avoir
+        where &= (i2.id == None)  # i1.number ≠ i2.reference
+        where &= (join_rev.right.id == None)  # i1.reference ≠ i3.number
+
+        return join_rev.select(
+            join_ref.left.sale_price_list.name.as_('assurance_name'),
+            Sum(join_ref.left.montant_assurance).as_('total_vente'),
+            where=where,
+            group_by=[join_ref.left.sale_price_list.name]
+        )
+
 
 
 class Ventes_Assurances_Par_Mois(ModelSQL, ModelView):
@@ -66,67 +106,5 @@ class Ventes_Assurances_Par_Mois(ModelSQL, ModelView):
             result[record.id] = total
         return result
     
-class Dashboard_General(ModelSQL, ModelView):
-    "Dashboard General Pour l'app"
-    __name__="general.dashboard"
-
-    # Date : Éléments général de la recherche 
-
-    date_debut = fields.Date("Date de Début", required=True)
-    date_fin = fields.Date("Date de Fin", required=True)
-
-    # Elément 1 : Etat / Classement Ventes Totale par Assurance
-
-    vente_assurance = fields.Boolean("Ventes Par Assurances", help="Cocher si vous voulez faire une actualisation des ventes par assurance")
-    assurance_name = fields.Function(fields.Char("Assurance"), "get_classement_assurance_vente")
-    total_vente =  fields.Function(fields.Float("Total des ventes."), "get_classement_assurance_vente")
-
-
-
-    def default_date_debut():
-        return date.today()
-    
-    def default_date_fin():
-        return date.today()
-    
-    def get_classement_assurance_vente(self):
-
-        if self.vente_assurance == True :
-
-            list_of_save_elements = []
-            listes_factures = []
-
-            Ventes_Assurance = Pool().get("ventes.assurances")
-            Ventes_ass = Ventes_Assurance.search([])
-            Ventes_Assurance.delete(Ventes_ass)
-
-            Invoices = Pool().get("account.invoice")
-            Factures = Invoices.search([('invoice_date', '>=', self.date_debut), ('invoice_date', '<=', self.date_fin), ('state', 'in', ['paid', 'posted'])])
-
-            for Facture in Factures:
-                if Facture.number not in listes_factures:
-                    listes_factures.append(Facture.number)
-            
-            for Facture in Factures:
-                if Facture.reference in listes_factures:
-                    listes_factures.remove(Facture.reference)
-                    listes_factures.remove(Facture.number)
-
-            dict_assurance = {}
-            for facture_number in listes_factures:
-                facture = Invoices.search([('number', '=', facture_number)], limit=1)
-                if not facture:
-                    continue
-                assurance = facture[0].party.sale_price_list
-                if assurance.name in dict_assurance:
-                    dict_assurance[assurance.id]['total_vente'] += facture[0].montant_assurance
-                else:
-                    dict_assurance[assurance.id] = {
-                        'assurance_name': assurance.name,  # nom réel du champ Many2One
-                        'total_vente': facture[0].montant_assurance
-                    }
-
-            return dict_assurance
-
 
 

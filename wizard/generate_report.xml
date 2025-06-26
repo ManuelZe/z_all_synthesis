@@ -11,14 +11,8 @@
         </record>
 
         <record model="ir.action.wizard" id="act_actualize_elements">
-            <field name="name">Actualiser les éléments du graph/rapport</field>
+            <field name="name">Syntheses des Ventes par Assurances</field>
             <field name="wiz_name">rapports.refresh.all</field>
-            <field name="model">ventes.assurances</field>
-        </record>
-        <record model="ir.action.keyword" id="act_actualize_element_keyword">
-            <field name="keyword">form_action</field>
-            <field name="model">ventes.assurances,-1</field>
-            <field name="action" ref="act_actualize_elements"/>
         </record>
 
     </data>

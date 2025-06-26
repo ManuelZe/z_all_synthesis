@@ -23,8 +23,9 @@
 ##############################################################################
 import re
 from trytond.model import ModelView, fields
-from trytond.wizard import Wizard, StateTransition, StateView, Button
+from trytond.wizard import Wizard, StateTransition, StateView, Button, StateAction
 from trytond.pool import Pool
+from trytond.pyson import Eval, Not, Bool, PYSONEncoder, Equal, And, Or
 from datetime import date, datetime, time
 from decimal import Decimal
 
@@ -36,7 +37,17 @@ class Elements_Actualisations(ModelView):
     date_debut = fields.Date("Date de Début", required=True)
     date_fin = fields.Date("Date de Fin", required=True)
 
+
+    @staticmethod
+    def default_date_debut():
+        return datetime.now()
+    
+    @staticmethod
+    def default_date_fin():
+        return datetime.now()
+
     vente_assurance = fields.Boolean("Ventes Par Assurances", help="Cocher si vous voulez faire une actualisation des ventes par assurance")
+
 
 class GenerateResultsReports(Wizard):
     'Generation des Rapports En Totalité'
@@ -45,11 +56,10 @@ class GenerateResultsReports(Wizard):
     start = StateView('elements.refresh.init',
         'z_all_synthesis.view_element_actualisation', [
             Button('Cancel', 'end', 'tryton-cancel'),
-            Button('Generate Validation', 'actualise_graph_reports', 'tryton-ok',
+            Button('Open', 'open_', 'tryton-ok',
                 True),
             ])
-    
-    BATCH_SIZE = 10
+    open_ = StateAction('z_all_synthesis.act_dashboard_syntheses_assurances_form2')
      
     def default_start(self, fields):
         today = date.today()
@@ -59,7 +69,23 @@ class GenerateResultsReports(Wizard):
             }
         return default
     
-    actualise_graph_reports = StateTransition()
+    def do_open_(self, action):
+        if self.start.vente_assurance :
+            action['pyson_context'] = PYSONEncoder().encode({
+            'date_start': self.start.date_start,
+            'date_end': self.start.date_end,
+            'vente_assurance': self.start.vente_assurance,
+            })
+
+            action['name'] = "Ventes Par Assurance"
+
+        return action, {}
+
+    def transition_open_(self):
+        return 'end'
+    
+
+
 
     def transition_actualise_graph_reports(self):
         if self.start.vente_assurance :

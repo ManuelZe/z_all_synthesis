@@ -11,7 +11,6 @@ __all__ = ['register']
 def register():
     Pool.register(
         z_all_synthesis.Classement_Assurance_vente,
-        z_all_synthesis.Dashboard_General,
         generate_report.Elements_Actualisations,
         module='z_all_synthesis', type_='model')
     Pool.register(
