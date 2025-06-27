@@ -41,7 +41,7 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
     def table_query(cls):
 
         SalePriceList = Pool().get('product.price_list')
-        sale_price_list = SalePriceList.__table__()
+        spl1 = SalePriceList.__table__()
 
         Party = Pool().get('party.party')
         party_all = Party.__table__()
@@ -63,8 +63,8 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
         join_rev.condition = join_ref.left.reference == join_rev.right.number
 
         # Jointure Party et salepricelist
-        join_part = Join(party_all1, sale_price_list, 'LEFT')
-        join_part.condition = party_all1.sale_price_list == sale_price_list.id
+        join_part = Join(party_all1, spl1, 'LEFT')
+        join_part.condition = party_all1.sale_price_list == spl1.id
 
         # Jointure entre join_part et invoice maintenant
         join_v = Join(join_rev, join_part, 'LEFT')
