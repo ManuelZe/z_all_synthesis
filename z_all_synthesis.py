@@ -68,7 +68,7 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
 
         # Jointure entre join_part et invoice maintenant
         join_v = Join(join_rev, join_part, 'LEFT')
-        join_v.condition = join_rev.left.party == join_part.left.id
+        join_v.condition = join_ref.left.party == join_part.left.id
         
         # Clause de base
         where = Literal(True)
