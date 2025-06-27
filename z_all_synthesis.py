@@ -47,9 +47,9 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
         invoice = Invoice.__table__()
 
         print(type(invoice))
-        i1 = invoice.__table__()
-        i2 = invoice.__table__()
-        i3 = invoice.__table__()
+        i1 = Invoice.__table__()
+        i2 = Invoice.__table__()
+        i3 = Invoice.__table__()
 
         # Jointures croisant facture et avoir
         join_ref = Join(i1, i2, 'LEFT')
