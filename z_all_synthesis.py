@@ -92,10 +92,10 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
 
         print(join_ref.left.sale_price_list.name)
         return join_v.select(
-            join_ppspl.sale_price_list.name,
+            partySPL1.sale_price_list.name,
             Sum(join_ref.left.montant_assurance),
             where=where,
-            group_by=[join_ppspl.sale_price_list.name]
+            group_by=[partySPL1.sale_price_list.name]
         )
 
 
