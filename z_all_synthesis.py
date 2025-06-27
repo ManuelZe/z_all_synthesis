@@ -77,11 +77,11 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
         where &= (join_rev.right.id == None)  # i1.reference ≠ i3.number
 
         print(join_ref.left.sale_price_list.name)
-        return join_rev.select(
-            join_spl.right.name,
-            Sum(join_ref.left.montant_assurance),
+        return join_spl.select(
+            sale_price_list.name,
+            Sum(i1.montant_assurance),
             where=where,
-            group_by=[join_spl.right.name]
+            group_by=[sale_price_list.name]
         )
 
 
