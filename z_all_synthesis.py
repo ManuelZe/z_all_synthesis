@@ -96,7 +96,7 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
 
         print(join_ref.left.sale_price_list.name)
         return join_v.select(
-            join_ref.left.id.as_('id'),
+            i1.id.as_('id'),
             spl1.name.as_('assurance_name'),
             Sum(join_ref.left.montant_assurance).as_('total_vente'),
             Cast(Now(), 'timestamp').as_('create_date'),
