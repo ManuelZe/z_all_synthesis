@@ -92,6 +92,7 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
 
         print(join_ref.left.sale_price_list.name)
         return join_v.select(
+            Literal(1).as_('id'),
             spl1.name,
             Sum(join_ref.left.montant_assurance),
             where=where,
