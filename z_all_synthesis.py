@@ -33,6 +33,9 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
     "Classement des ventes Totale par Assurance"
     __name__ = "ventes.assurances"
 
+    _rec_name = "Ventes Assurances"
+    _history = False
+
     assurance_name = fields.Char("Assurance")
     total_vente = fields.Float("Total des ventes.")
 
