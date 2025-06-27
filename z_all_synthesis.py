@@ -87,7 +87,7 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
         print(join_ref.left.sale_price_list.name)
         return join_v.select(
             join_part.right.name,
-            Sum(join_rev.left.montant_assurance),
+            Sum(join_ref.left.montant_assurance),
             where=where,
             group_by=[join_part.right.name]
         )
