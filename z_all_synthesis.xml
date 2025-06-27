@@ -13,7 +13,7 @@
         </record>
 
         <record model="ir.action.act_window" id="act_syntheses_assurances_form2">
-         <field name="name">Syntheses des Ventes par Assurances</field>
+         <field name="name">Syntheses des Ventes par Assurances Niveau 2</field>
          <field name="res_model">ventes.assurances</field>
         </record>
 

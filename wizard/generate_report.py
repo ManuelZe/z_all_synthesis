@@ -60,14 +60,6 @@ class GenerateResultsReports(Wizard):
                 True),
             ])
     open_ = StateAction('z_all_synthesis.act_dashboard_syntheses_assurances_form2')
-     
-    def default_start(self, fields):
-        today = date.today()
-        default = {
-            'date_debut': datetime.combine(today, time.min),
-            'date_fin': datetime.combine(today, time.max),
-            }
-        return default
     
     def do_open_(self, action):
         if self.start.vente_assurance :
