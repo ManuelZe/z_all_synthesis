@@ -21,6 +21,7 @@ from trytond.transaction import Transaction
 from sql import Select, Join, Literal
 from sql import Table
 from sql.aggregate import Sum
+from sql import alias
 
 from trytond.model import fields
 from trytond.pool import PoolMeta
@@ -46,9 +47,9 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
         invoice = Invoice.__table__()
 
         print(type(invoice))
-        i1 = invoice.alias('i1')
-        i2 = invoice.alias('i2')
-        i3 = invoice.alias('i3')
+        i1 = invoice.__table__()
+        i2 = invoice.__table__()
+        i3 = invoice.__table__()
 
         # Jointures croisant facture et avoir
         join_ref = Join(i1, i2, 'LEFT')
