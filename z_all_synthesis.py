@@ -104,7 +104,9 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
             Cast(None, 'timestamp').as_('write_date'),
             Literal(None).as_('write_uid'),
             where=where,
-            group_by=[spl1.name]
+            group_by=[
+                i1.id,
+                spl1.name]
         )
 
 
