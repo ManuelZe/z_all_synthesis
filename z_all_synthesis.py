@@ -21,7 +21,8 @@ from trytond.transaction import Transaction
 from sql import Select, Join, Literal
 from sql import Table
 from sql.aggregate import Sum
-from sql import alias
+from sql import Literal, Cast
+from sql.functions import Now
 
 from trytond.model import fields
 from trytond.pool import PoolMeta
@@ -98,6 +99,7 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
             Literal(1).as_('id'),
             spl1.name.as_('assurance_name'),
             Sum(join_ref.left.montant_assurance).as_('total_vente'),
+            Cast(Now(), 'timestamp').as_('create_date'),
             where=where,
             group_by=[spl1.name]
         )
