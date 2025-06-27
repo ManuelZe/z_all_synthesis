@@ -100,6 +100,7 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
             spl1.name.as_('assurance_name'),
             Sum(join_ref.left.montant_assurance).as_('total_vente'),
             Cast(Now(), 'timestamp').as_('create_date'),
+            Literal(1).as_('create_uid'),
             where=where,
             group_by=[spl1.name]
         )
