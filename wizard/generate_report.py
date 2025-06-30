@@ -112,7 +112,7 @@ class GenerateResultsReports(Wizard):
             facture = Invoices.search([('number', '=', facture_number)], limit=1)
             if not facture:
                 continue
-            assurance = facture[0].party.sale_price_list
+            assurance = facture[0].health_service.insurance_plan.company.name
             if assurance.name in dict_assurance:
                 dict_assurance[assurance.id]['total_vente'] += facture[0].montant_assurance
             else:
