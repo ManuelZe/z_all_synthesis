@@ -22,13 +22,6 @@
             <field name="view" ref="ventes_assurance_view_list2"/>
             <field name="act_window" ref="act_syntheses_assurances_form2"/>
         </record>
-    
-        <menuitem
-            parent="menu_rapport"
-            action="z_all_synthesis.act_actualize_elements"
-            sequence="10"
-            id="menu_act_syntheses_assurances_form"/>
-
 
    </data>
 </tryton>

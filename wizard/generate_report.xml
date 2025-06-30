@@ -14,6 +14,12 @@
             <field name="name">Syntheses des Ventes par Assurances</field>
             <field name="wiz_name">rapports.refresh.all</field>
         </record>
+    
+        <menuitem
+            parent="menu_rapport"
+            action="act_actualize_elements"
+            sequence="10"
+            id="menu_act_syntheses_assurances_form"/>
 
     </data>
 </tryton>
