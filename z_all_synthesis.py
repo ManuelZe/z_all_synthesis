@@ -41,76 +41,74 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
     total_vente = fields.Float("Total des ventes.")
 
 
-    @classmethod
-    def table_query(cls):
+    # @classmethod
+    # def table_query(cls):
 
-        SalePriceList = Pool().get('product.price_list')
-        spl1 = SalePriceList.__table__()
+    #     SalePriceList = Pool().get('product.price_list')
+    #     spl1 = SalePriceList.__table__()
 
-        Party = Pool().get('party.party')
-        party_all1 = Party.__table__()
+    #     Party = Pool().get('party.party')
+    #     party_all1 = Party.__table__()
 
-        PartySalePriceList = Pool().get('party.party.sale_price_list')
-        partySPL1 = PartySalePriceList.__table__()
+    #     PartySalePriceList = Pool().get('party.party.sale_price_list')
+    #     partySPL1 = PartySalePriceList.__table__()
 
-        Invoice = Pool().get('account.invoice')
-        invoice = Invoice.__table__()
+    #     Invoice = Pool().get('account.invoice')
+    #     invoice = Invoice.__table__()
 
-        print(type(invoice))
-        i1 = Invoice.__table__()
-        i2 = Invoice.__table__()
-        i3 = Invoice.__table__()
+    #     print(type(invoice))
+    #     i1 = Invoice.__table__()
+    #     i2 = Invoice.__table__()
+    #     i3 = Invoice.__table__()
 
-        # Jointures croisant facture et avoir
-        join_ref = Join(i1, i2, 'LEFT')
-        join_ref.condition = i1.number == i2.reference
+    #     # Jointures croisant facture et avoir
+    #     join_ref = Join(i1, i2, 'LEFT')
+    #     join_ref.condition = i1.number == i2.reference
 
-        join_rev = Join(join_ref, i3, 'LEFT')
-        join_rev.condition = join_ref.left.reference == join_rev.right.number
+    #     join_rev = Join(join_ref, i3, 'LEFT')
+    #     join_rev.condition = join_ref.left.reference == join_rev.right.number
 
-        # JOINTURE ENTRE PARTY_PARTY_SALE_PRICE_LIST ET PRODUCT_PRICE_LIST
-        join_ppspl = Join(partySPL1, spl1, 'LEFT')
-        join_ppspl.condition = partySPL1.sale_price_list == spl1.id
+    #     # JOINTURE ENTRE PARTY_PARTY_SALE_PRICE_LIST ET PRODUCT_PRICE_LIST
+    #     join_ppspl = Join(partySPL1, spl1, 'LEFT')
+    #     join_ppspl.condition = partySPL1.sale_price_list == spl1.id
 
-        # Jointure Party et join_ppspl
-        join_part = Join(party_all1, join_ppspl, 'LEFT')
-        join_part.condition = party_all1.id == partySPL1.id
+    #     # Jointure Party et join_ppspl
+    #     join_part = Join(party_all1, join_ppspl, 'LEFT')
+    #     join_part.condition = party_all1.id == partySPL1.id
 
-        # Jointure entre join_part et invoice maintenant
-        join_v = Join(join_rev, join_part, 'LEFT')
-        join_v.condition = join_ref.left.party == join_part.left.id
+    #     # Jointure entre join_part et invoice maintenant
+    #     join_v = Join(join_rev, join_part, 'LEFT')
+    #     join_v.condition = join_ref.left.party == join_part.left.id
         
-        # Clause de base
-        where = Literal(True)
-        ctx = Transaction().context
+    #     # Clause de base
+    #     where = Literal(True)
+    #     ctx = Transaction().context
 
-        if ctx.get('start_date'):
-            where &= i1.invoice_date >= ctx['date_start']
-        if ctx.get('end_date'):
-            where &= i1.invoice_date <= ctx['date_end']
-        where &= i1.state.in_(['paid', 'posted'])
+    #     if ctx.get('start_date'):
+    #         where &= i1.invoice_date >= ctx['date_start']
+    #     if ctx.get('end_date'):
+    #         where &= i1.invoice_date <= ctx['date_end']
+    #     where &= i1.state.in_(['paid', 'posted'])
 
-        # Élimination des factures avec relation crédit/avoir
-        where &= (i2.id == None)  # i1.number ≠ i2.reference
-        where &= (join_rev.right.id == None)  # i1.reference ≠ i3.number
+    #     # Élimination des factures avec relation crédit/avoir
+    #     where &= (i2.id == None)  # i1.number ≠ i2.reference
+    #     where &= (join_rev.right.id == None)  # i1.reference ≠ i3.number
 
-        element = join_v.select(
-            i1.id.as_('id'),
-            spl1.name.as_('assurance_name'),
-            Sum(join_ref.left.montant_assurance).as_('total_vente'),
-            Cast(Now(), 'timestamp').as_('create_date'),
-            Literal(1).as_('create_uid'),
-            Cast(None, 'timestamp').as_('write_date'),
-            Literal(None).as_('write_uid'),
-            where=where,
-            group_by=[
-                i1.id,
-                spl1.name]
-        )
+    #     element = join_v.select(
+    #         i1.id.as_('id'),
+    #         spl1.name.as_('assurance_name'),
+    #         Sum(join_ref.left.montant_assurance).as_('total_vente'),
+    #         Cast(Now(), 'timestamp').as_('create_date'),
+    #         Literal(1).as_('create_uid'),
+    #         Cast(None, 'timestamp').as_('write_date'),
+    #         Literal(None).as_('write_uid'),
+    #         where=where,
+    #         group_by=[
+    #             i1.id,
+    #             spl1.name]
+    #     )
 
-        print(f"l'élément les plus --------- {element}")
-
-        return element 
+    #     return element 
 
 
 

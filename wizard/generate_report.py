@@ -56,103 +56,112 @@ class GenerateResultsReports(Wizard):
     start = StateView('elements.refresh.init',
         'z_all_synthesis.view_element_actualisation', [
             Button('Cancel', 'end', 'tryton-cancel'),
-            Button('Open', 'open_', 'tryton-ok',
+            Button('Assurance Vente', 'actualisation_element', 'tryton-ok',
                 True),
             ])
-    open_ = StateAction('z_all_synthesis.act_syntheses_assurances_form2')
     
-    def do_open_(self, action):
-        if self.start.vente_assurance :
-            action['pyson_context'] = PYSONEncoder().encode({
-            'date_start': self.start.date_debut,
-            'date_end': self.start.date_fin,
-            'vente_assurance': self.start.vente_assurance,
-            })
+    actualisation_element = StateTransition()
+    # open_ = StateAction('z_all_synthesis.act_syntheses_assurances_form2')
+    
+    # def do_open_(self, action):
+    #     if self.start.vente_assurance :
+    #         action['pyson_context'] = PYSONEncoder().encode({
+    #         'date_start': self.start.date_debut,
+    #         'date_end': self.start.date_fin,
+    #         'vente_assurance': self.start.vente_assurance,
+    #         })
 
-            action['name'] = "Ventes Par Assurance"
+    #         action['name'] = "Ventes Par Assurance"
 
-        return action, {}
+    #     return action, {}
 
-    def transition_open_(self):
+    # def transition_open_(self):
+    #     return 'end'
+
+    def transition_actualisation_element(self):
+
+        if self.start.vente_assurance:
+            self.is_vente_assurance(self.start.date_debut, self.start.date_fin)
+        
         return 'end'
 
     
-    # def is_vente_assurance(self, start_date, end_date):
+    def is_vente_assurance(self, start_date, end_date):
 
-    #     list_of_save_elements = []
-    #     listes_factures = []
+        list_of_save_elements = []
+        listes_factures = []
 
-    #     Ventes_Assurance = Pool().get("ventes.assurances")
-    #     Ventes_ass = Ventes_Assurance.search([])
-    #     Ventes_Assurance.delete(Ventes_ass)
+        Ventes_Assurance = Pool().get("ventes.assurances")
+        Ventes_ass = Ventes_Assurance.search([])
+        Ventes_Assurance.delete(Ventes_ass)
 
-    #     Invoices = Pool().get("account.invoice")
-    #     Factures = Invoices.search([('invoice_date', '>=', start_date), ('invoice_date', '<=', end_date), ('state', 'in', ['paid', 'posted'])])
+        Invoices = Pool().get("account.invoice")
+        Factures = Invoices.search([('invoice_date', '>=', start_date), ('invoice_date', '<=', end_date), ('state', 'in', ['paid', 'posted'])])
 
-    #     for Facture in Factures:
-    #         if Facture.number not in listes_factures:
-    #             listes_factures.append(Facture.number)
+        for Facture in Factures:
+            if Facture.number not in listes_factures:
+                listes_factures.append(Facture.number)
         
-    #     for Facture in Factures:
-    #         if Facture.reference in listes_factures:
-    #             listes_factures.remove(Facture.reference)
-    #             listes_factures.remove(Facture.number)
+        for Facture in Factures:
+            if Facture.reference in listes_factures:
+                listes_factures.remove(Facture.reference)
+                listes_factures.remove(Facture.number)
 
-    #     dict_assurance = {}
-    #     for facture_number in listes_factures:
-    #         facture = Invoices.search([('number', '=', facture_number)], limit=1)
-    #         if not facture:
-    #             continue
-    #         assurance = facture[0].party.sale_price_list
-    #         if assurance.name in dict_assurance:
-    #             dict_assurance[assurance.id]['total_vente'] += facture[0].montant_assurance
-    #         else:
-    #             dict_assurance[assurance.id] = {
-    #                 'assurance_name': assurance.name,  # nom réel du champ Many2One
-    #                 'total_vente': facture[0].montant_assurance
-    #             }
+        dict_assurance = {}
+        for facture_number in listes_factures:
+            facture = Invoices.search([('number', '=', facture_number)], limit=1)
+            if not facture:
+                continue
+            assurance = facture[0].party.sale_price_list
+            if assurance.name in dict_assurance:
+                dict_assurance[assurance.id]['total_vente'] += facture[0].montant_assurance
+            else:
+                dict_assurance[assurance.id] = {
+                    'assurance_name': assurance.name,  # nom réel du champ Many2One
+                    'total_vente': facture[0].montant_assurance
+                }
 
-    #     list_of_save_elements = list(dict_assurance.values())
-    #     Ventes_Assurance.create(list_of_save_elements)
+        list_of_save_elements = list(dict_assurance.values())
+        Ventes_Assurance.create(list_of_save_elements)
 
 
         
 
-    # def syntheses_ventes(records, insurance=True):
-    #     # Exemplaire de sortie de liste 
-    #     # elements2 = ["total_amount", "montant_assurance", "Remise",  "montant_patient-amount_to_pay", "montant_patient", "amount_to_pay"]
-    #     # elements = ["total_amount" , "montant_assurance", "montant_patient", "montant_patient-amount_to_pay", "amount_to_pay"]
+    def syntheses_ventes(records, insurance=True):
+        # Exemplaire de sortie de liste 
+        # elements2 = ["total_amount", "montant_assurance", "Remise",  "montant_patient-amount_to_pay", "montant_patient", "amount_to_pay"]
+        # elements = ["total_amount" , "montant_assurance", "montant_patient", "montant_patient-amount_to_pay", "amount_to_pay"]
 
-    #     elements = []
-    #     total_amount = Decimal(0)
-    #     montant_assurance = Decimal(0)
-    #     z_remise2 = Decimal(0)
-    #     net_a_payer = Decimal(0)
-    #     amount_to_pay = Decimal(0)
-    #     difference = Decimal(0)
-    #     total_amount2 = Decimal(0)
+        elements = []
+        total_amount = Decimal(0)
+        montant_assurance = Decimal(0)
+        z_remise2 = Decimal(0)
+        net_a_payer = Decimal(0)
+        amount_to_pay = Decimal(0)
+        difference = Decimal(0)
+        total_amount2 = Decimal(0)
 
-    #     for record in records:
-    #         if record.health_service :
-    #             if bool(record.health_service.insurance_plan) != insurance:
-    #                 continue
-    #             total_amount += record.untaxed_amount or Decimal(0)
-    #             montant_assurance += record.montant_assurance or Decimal(0)
-    #             z_remise2 += record.health_service.z_remise2 or Decimal(0)
-    #             net_a_payer += record.montant_patient or Decimal(0)
-    #             amount_to_pay += record.amount_to_pay or Decimal(0)
-    #             total_amount2 += Decimal(record.untaxed_amount or 0) + Decimal(record.montant_assurance or 0)
+        for record in records:
+            if record.health_service :
+                if bool(record.health_service.insurance_plan) != insurance:
+                    continue
+                total_amount += record.untaxed_amount or Decimal(0)
+                montant_assurance += record.montant_assurance or Decimal(0)
+                z_remise2 += record.health_service.z_remise2 or Decimal(0)
+                net_a_payer += record.montant_patient or Decimal(0)
+                amount_to_pay += record.amount_to_pay or Decimal(0)
+                total_amount2 += Decimal(record.untaxed_amount or 0) + Decimal(record.montant_assurance or 0)
         
-    #     difference = net_a_payer - amount_to_pay
+        difference = net_a_payer - amount_to_pay
         
-    #     elements.extend([
-    #         total_amount,
-    #         montant_assurance,
-    #         z_remise2,
-    #         net_a_payer,
-    #         difference,
-    #         amount_to_pay,
-    #         total_amount2
-    #     ])
+        elements.extend([
+            total_amount,
+            montant_assurance,
+            z_remise2,
+            net_a_payer,
+            difference,
+            amount_to_pay,
+            total_amount2
+        ])
         
-    #     return elements
+        return elements
