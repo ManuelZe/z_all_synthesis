@@ -94,8 +94,7 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
         where &= (i2.id == None)  # i1.number ≠ i2.reference
         where &= (join_rev.right.id == None)  # i1.reference ≠ i3.number
 
-        print(join_ref.left.sale_price_list.name)
-        return join_v.select(
+        element = join_v.select(
             i1.id.as_('id'),
             spl1.name.as_('assurance_name'),
             Sum(join_ref.left.montant_assurance).as_('total_vente'),
@@ -108,6 +107,10 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
                 i1.id,
                 spl1.name]
         )
+
+        print(f"l'élément les plus --------- {element}")
+
+        return element 
 
 
 
