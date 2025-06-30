@@ -15,5 +15,10 @@
             <field name="wiz_name">rapports.refresh.all</field>
         </record>
 
+        <menuitem
+            parent="menu_rapport"
+            action="act_actualize_elements"
+            sequence="90"
+            id="menu_rapport_actualise rapport"/>
     </data>
 </tryton>
