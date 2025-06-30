@@ -85,9 +85,9 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
         ctx = Transaction().context
 
         if ctx.get('start_date'):
-            where &= i1.invoice_date >= ctx['start_date']
+            where &= i1.invoice_date >= ctx['date_start']
         if ctx.get('end_date'):
-            where &= i1.invoice_date <= ctx['end_date']
+            where &= i1.invoice_date <= ctx['date_end']
         where &= i1.state.in_(['paid', 'posted'])
 
         # Élimination des factures avec relation crédit/avoir
