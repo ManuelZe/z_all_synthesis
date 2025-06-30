@@ -112,13 +112,16 @@ class GenerateResultsReports(Wizard):
         dict_assurance = {}
         for facture_number in listes_factures:
             facture = Invoices.search([('number', '=', facture_number)], limit=1)
+            print(f"Essayons de voir l'assurance du party ------ {facture[0].party.sale_price_list}")
             if not facture:
                 continue
             try :
                 assurance = facture[0].health_service.insurance_plan.company
             except AttributeError :
-                assurance = Party.search([('name', 'ilike', '\%CLIENT PDMD')], limit=1)
+                assurance = Party.search([('name', 'ilike', 'CLIENTS PDMD')], limit=1)
                 assurance = assurance[0]
+
+            print(f"Assurance à parti du heath_service ---- {assurance.name}")
             if assurance.name in dict_assurance:
                 dict_assurance[assurance.id]['total_vente'] += facture[0].montant_assurance
             else:
