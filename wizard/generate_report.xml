@@ -13,7 +13,7 @@
         <record model="ir.action.wizard" id="act_actualize_elements">
             <field name="name">Syntheses des Ventes par Assurances</field>
             <field name="wiz_name">rapports.refresh.all</field>
-            <field name="model">ventes.assurances</field>
+            <field name="model" eval="None" />
         </record>
     
         <menuitem
