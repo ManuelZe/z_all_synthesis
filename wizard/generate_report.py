@@ -88,6 +88,8 @@ class GenerateResultsReports(Wizard):
     
     def is_vente_assurance(self, start_date, end_date):
 
+        Party = Pool().get("party.party")
+
         list_of_save_elements = []
         listes_factures = []
 
@@ -112,7 +114,11 @@ class GenerateResultsReports(Wizard):
             facture = Invoices.search([('number', '=', facture_number)], limit=1)
             if not facture:
                 continue
-            assurance = facture[0].health_service.insurance_plan.company.name
+            try :
+                assurance = facture[0].health_service.insurance_plan.company
+            except AttributeError :
+                assurance = Party.search([('name', 'ilike', '\%CLIENT PDMD')], limit=1)
+                assurance = assurance[0]
             if assurance.name in dict_assurance:
                 dict_assurance[assurance.id]['total_vente'] += facture[0].montant_assurance
             else:
