@@ -75,17 +75,6 @@ class GenerateResultsReports(Wizard):
 
     def transition_open_(self):
         return 'end'
-    
-
-
-
-    def transition_actualise_graph_reports(self):
-        if self.start.vente_assurance :
-            print("toto")
-            self.is_vente_assurance(self.start.date_debut,  self.start.date_fin)
-
-            return 'end'
-    
 
     
     def is_vente_assurance(self, start_date, end_date):
