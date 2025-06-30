@@ -59,7 +59,7 @@ class GenerateResultsReports(Wizard):
             Button('Open', 'open_', 'tryton-ok',
                 True),
             ])
-    open_ = StateAction('z_all_synthesis.act_dashboard_syntheses_assurances_form2')
+    open_ = StateAction('z_all_synthesis.act_syntheses_assurances_form2')
     
     def do_open_(self, action):
         if self.start.vente_assurance :

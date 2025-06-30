@@ -25,7 +25,7 @@
     
         <menuitem
             parent="menu_rapport"
-            action="act_syntheses_assurances_form2"
+            action="z_all_synthesis.act_actualize_elements"
             sequence="10"
             id="menu_act_syntheses_assurances_form"/>
 
