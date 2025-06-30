@@ -64,8 +64,8 @@ class GenerateResultsReports(Wizard):
     def do_open_(self, action):
         if self.start.vente_assurance :
             action['pyson_context'] = PYSONEncoder().encode({
-            'date_start': self.start.date_start,
-            'date_end': self.start.date_end,
+            'date_start': self.start.date_debut,
+            'date_end': self.start.date_fin,
             'vente_assurance': self.start.vente_assurance,
             })
 
