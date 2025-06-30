@@ -112,7 +112,7 @@ class GenerateResultsReports(Wizard):
         dict_assurance = {}
         for facture_number in listes_factures:
             facture = Invoices.search([('number', '=', facture_number)], limit=1)
-            print(f"Essayons de voir l'assurance du party ------ {facture[0].party.sale_price_list}")
+            print(f"Essayons de voir l'assurance du party ------ {facture[0].party.sale_price_list.name}")
             if not facture:
                 continue
             try :
