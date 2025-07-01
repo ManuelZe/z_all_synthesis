@@ -110,7 +110,6 @@ class GenerateResultsReports(Wizard):
                 listes_factures.remove(Facture.number)
 
         dict_assurance = {}
-        print(f"La Longeur de la liste {listes_factures}")
         for facture_number in listes_factures:
             facture = Invoices.search([('number', '=', facture_number)], limit=1)
 
@@ -122,7 +121,7 @@ class GenerateResultsReports(Wizard):
                 assurance = Party.search([('name', 'ilike', 'CLIENTS PDMD')], limit=1)
                 assurance = assurance[0]
 
-            if assurance.name in dict_assurance:
+            if assurance.id in dict_assurance:
                 dict_assurance[assurance.id]['total_vente'] += facture[0].montant_assurance
             else:
                 dict_assurance[assurance.id] = {
