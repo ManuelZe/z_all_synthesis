@@ -115,7 +115,7 @@ class GenerateResultsReports(Wizard):
             for line in facture[0].lines:
                 if line.product.id == product.id:
                     nbr += 1
-                    total_vente += (line.montant_produit())*float(line.quantity)
+                    total_vente += float(line.montant_produit())*float(line.quantity)
 
         elt['produit_name'] = product
         elt['nbr'] = nbr
