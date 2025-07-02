@@ -154,12 +154,12 @@ class GenerateResultsReports(Wizard):
             for line in facture[0].lines:
                 if line.product.id in dict_produit:
                     dict_produit[line.product.id]['nbr'] += 1
-                    dict_produit[line.product.id]['total_vente'] += (line.montant_produit())*line.quantity
+                    dict_produit[line.product.id]['total_vente'] += float(line.montant_produit())*float(line.quantity)
                 else:
                     dict_produit[line.product.id] = {
                         'produit_name': line.product,
                         'nbr': 1,
-                        'total_vente': (line.montant_produit())*line.quantity
+                        'total_vente': float(line.montant_produit())*float(line.quantity)
                     }
 
         list_of_save_elements = list(dict_produit.values())
