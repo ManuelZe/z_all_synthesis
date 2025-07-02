@@ -12,6 +12,7 @@ def register():
     Pool.register(
         z_all_synthesis.Classement_Assurance_vente,
         generate_report.Elements_Actualisations,
+        z_all_synthesis.Produits_Sur_Peride,
         module='z_all_synthesis', type_='model')
     Pool.register(
         generate_report.GenerateResultsReports,
