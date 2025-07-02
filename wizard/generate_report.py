@@ -46,7 +46,10 @@ class Elements_Actualisations(ModelView):
     def default_date_fin():
         return datetime.now()
 
-    vente_assurance = fields.Boolean("Ventes Par Assurances", help="Cocher si vous voulez faire une actualisation des ventes par assurance")
+    vente_assurance = fields.Boolean("Ventes Par Assurances", help="Syntheses des Ventes par Assurances")
+
+    product = fields.Many2One("product.product", "Produit", help="Produit à synthétiser")
+    all_product = fields.Boolean("Tous les produits", default=False, help="Synthèses de tous les produits vendus")
 
 
 class GenerateResultsReports(Wizard):
@@ -61,31 +64,108 @@ class GenerateResultsReports(Wizard):
             ])
     
     actualisation_element = StateTransition()
-    # open_ = StateAction('z_all_synthesis.act_syntheses_assurances_form2')
-    
-    # def do_open_(self, action):
-    #     if self.start.vente_assurance :
-    #         action['pyson_context'] = PYSONEncoder().encode({
-    #         'date_start': self.start.date_debut,
-    #         'date_end': self.start.date_fin,
-    #         'vente_assurance': self.start.vente_assurance,
-    #         })
-
-    #         action['name'] = "Ventes Par Assurance"
-
-    #     return action, {}
-
-    # def transition_open_(self):
-    #     return 'end'
 
     def transition_actualisation_element(self):
 
         if self.start.vente_assurance:
             self.is_vente_assurance(self.start.date_debut, self.start.date_fin)
+
+        if self.start.product and not self.start.all_product:
+            self.is_product(self.start.product, self.start.date_debut, self.start.date_fin)
+        elif self.start.all_product and not self.start.product:
+            self.is_all_product(self.start.date_debut, self.start.date_fin)            
         
         return 'end'
 
+
+    def is_product(self, start_date, end_date):
+        """
+        This method is used to synthesize the sales of a specific product
+        between the given start and end dates.
+        """
+
+        Produits_Sur_Peride = Pool().get("ventes.produits.periode")
+        Produits_Sur_Peride.delete(Produits_Sur_Peride.search([]))
+
+        Product = Pool().get("product.product")
+        Invoices = Pool().get("account.invoice")
+
+        Factures = Invoices.search([('invoice_date', '>=', start_date), ('invoice_date', '<=', end_date), ('state', 'in', ['paid', 'posted'])])
+
+        listes_factures = []
+        for Facture in Factures:
+            if Facture.number not in listes_factures:
+                listes_factures.append(Facture.number)
+        
+        for Facture in Factures:
+            if Facture.reference in listes_factures:
+                listes_factures.remove(Facture.reference)
+                listes_factures.remove(Facture.number)
+        
+        if not self.start.product:
+            return
+        
+        product = Product(self.start.product.id)
+
+        nbr = 0
+        total_vente = Decimal(0)
+        elt = {}
+        for facture_number in listes_factures:
+            facture = Invoices.search([('number', '=', facture_number)], limit=1)
+            for line in facture[0].lines:
+                if line.product.id == product.id:
+                    nbr += 1
+                    total_vente += (line.montant_produit())*line.quantity
+
+        elt['produit_name'] = product.name
+        elt['nbr'] = nbr
+        elt['total_vente'] = total_vente
+        
+        Produits_Sur_Peride.create([elt])
+
+
+    def is_all_product(self, start_date, end_date):
+        """
+        This method is used to synthesize the sales of all products
+        between the given start and end dates.
+        """
+
+        Produits_Sur_Peride = Pool().get("ventes.produits.periode")
+        Produits_Sur_Peride.delete(Produits_Sur_Peride.search([]))
+
+        Product = Pool().get("product.product")
+        Invoices = Pool().get("account.invoice")
+
+        Factures = Invoices.search([('invoice_date', '>=', start_date), ('invoice_date', '<=', end_date), ('state', 'in', ['paid', 'posted'])])
+
+        listes_factures = []
+        for Facture in Factures:
+            if Facture.number not in listes_factures:
+                listes_factures.append(Facture.number)
+        
+        for Facture in Factures:
+            if Facture.reference in listes_factures:
+                listes_factures.remove(Facture.reference)
+                listes_factures.remove(Facture.number)
+
+        dict_produit = {}
+        for facture_number in listes_factures:
+            facture = Invoices.search([('number', '=', facture_number)], limit=1)
+            for line in facture[0].lines:
+                if line.product.id in dict_produit:
+                    dict_produit[line.product.id]['nbr'] += 1
+                    dict_produit[line.product.id]['total_vente'] += (line.montant_produit())*line.quantity
+                else:
+                    dict_produit[line.product.id] = {
+                        'produit_name': line.product.name,
+                        'nbr': 1,
+                        'total_vente': (line.montant_produit())*line.quantity
+                    }
+
+        list_of_save_elements = list(dict_produit.values())
+        Produits_Sur_Peride.create(list_of_save_elements)
     
+
     def is_vente_assurance(self, start_date, end_date):
 
         Party = Pool().get("party.party")
@@ -132,8 +212,6 @@ class GenerateResultsReports(Wizard):
         list_of_save_elements = list(dict_assurance.values())
         Ventes_Assurance.create(list_of_save_elements)
 
-
-        
 
     def syntheses_ventes(records, insurance=True):
         # Exemplaire de sortie de liste 

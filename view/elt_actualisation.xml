@@ -3,13 +3,23 @@
     <separator string="Remplissez les informations Nécessaires."
         colspan="4" id="test_ask_element_actualize"/>
     <newline/>
-    <separator string="Elements Actualisations" colspan="6"
-        id="elements_acutalize"/>
+    <separator string="Dates (Important)" colspan="6"
+        id="elements_dates"/>
 
     <label name="date_debut"/>
     <field name="date_debut"/>
     <label name="date_fin"/>
     <field name="date_fin"/>
+
+    <separator string="Assurances" colspan="6"
+        id="elements_assurance"/>
     <label name="vente_assurance"/>
     <field name="vente_assurance"/>
+
+    <separator string="Eléments Pour les produits" colspan="6"
+        id="elements_product"/>
+    <label name="product"/>
+    <field name="product"/>
+    <label name="all_product"/>
+    <field name="all_product"/>
 </form>

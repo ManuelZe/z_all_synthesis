@@ -112,6 +112,15 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
 
 
 
+class Produits_Sur_Peride(ModelSQL, ModelView):
+    "Classement des produits vendus sur une période"
+    __name__ = "ventes.produits.periode"
+
+    produit_name = fields.Many2One("product.product", "Produit", required=True)
+    nbr = fields.Integer("Nombre de ventes", required=True)
+    total_vente = fields.Float("Total des ventes", required=True)
+    
+
 class Ventes_Assurances_Par_Mois(ModelSQL, ModelView):
     "Classement des ventes d'une seule assurance par mois"
     __name__ = "ventes.assurance.mois"

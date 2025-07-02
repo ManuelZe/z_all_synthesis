@@ -13,7 +13,7 @@
         </record>
 
         <record model="ir.action.act_window" id="act_syntheses_assurances_form2">
-         <field name="name">Syntheses des Ventes par Assurances Niveau 2</field>
+         <field name="name">Syntheses des Ventes par Assurances</field>
          <field name="res_model">ventes.assurances</field>
         </record>
 
@@ -28,6 +28,31 @@
             action="act_syntheses_assurances_form2"
             sequence="20"
             id="menu_act_syntheses_assurances_tree"/>
+
+        <!-- SYNTHESES DES PRODUITS VENDUS SUR LA PÉRIODE -->
+
+        <record model="ir.ui.view" id="ventes_produits_view_list2">
+            <field name="model">ventes.produits.periode</field>
+            <field name="type">tree</field>
+            <field name="name">ventes_produits_list_tree</field>
+        </record>
+
+        <record model="ir.action.act_window" id="act_syntheses_produits_form2">
+         <field name="name">Syntheses des produits</field>
+         <field name="res_model">ventes.produits.periode</field>
+        </record>
+
+        <record model="ir.action.act_window.view" id="act_syntheses_produits_form_view12">
+            <field name="sequence" eval="10"/>
+            <field name="view" ref="ventes_produits_view_list2"/>
+            <field name="act_window" ref="act_syntheses_produits_form2"/>
+        </record>
+
+        <menuitem
+            parent="menu_rapport"
+            action="act_syntheses_produits_form2"
+            sequence="20"
+            id="menu_act_syntheses_produits_tree"/>
 
    </data>
 </tryton>
