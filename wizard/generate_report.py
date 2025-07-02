@@ -108,7 +108,7 @@ class GenerateResultsReports(Wizard):
         product = Product(self.start.product.id)
 
         nbr = 0
-        total_vente = Decimal(0)
+        total_vente = float(0)
         elt = {}
         for facture_number in listes_factures:
             facture = Invoices.search([('number', '=', facture_number)], limit=1)
