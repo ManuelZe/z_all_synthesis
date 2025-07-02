@@ -49,7 +49,7 @@ class Elements_Actualisations(ModelView):
     vente_assurance = fields.Boolean("Ventes Par Assurances", help="Syntheses des Ventes par Assurances")
 
     product = fields.Many2One("product.product", "Produit", help="Produit à synthétiser")
-    all_product = fields.Boolean("Tous les produits", default=False, help="Synthèses de tous les produits vendus")
+    all_product = fields.Boolean("Tous les produits", help="Synthèses de tous les produits vendus")
 
 
 class GenerateResultsReports(Wizard):
