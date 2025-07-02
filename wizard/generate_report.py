@@ -71,7 +71,7 @@ class GenerateResultsReports(Wizard):
             self.is_vente_assurance(self.start.date_debut, self.start.date_fin)
 
         if self.start.product and not self.start.all_product:
-            self.is_product(self.start.product, self.start.date_debut, self.start.date_fin)
+            self.is_product(self.start.date_debut, self.start.date_fin)
         elif self.start.all_product and not self.start.product:
             self.is_all_product(self.start.date_debut, self.start.date_fin)            
         
