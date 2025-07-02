@@ -117,7 +117,7 @@ class GenerateResultsReports(Wizard):
                     nbr += 1
                     total_vente += (line.montant_produit())*line.quantity
 
-        elt['produit_name'] = product.name
+        elt['produit_name'] = product
         elt['nbr'] = nbr
         elt['total_vente'] = total_vente
         
@@ -157,7 +157,7 @@ class GenerateResultsReports(Wizard):
                     dict_produit[line.product.id]['total_vente'] += (line.montant_produit())*line.quantity
                 else:
                     dict_produit[line.product.id] = {
-                        'produit_name': line.product.name,
+                        'produit_name': line.product,
                         'nbr': 1,
                         'total_vente': (line.montant_produit())*line.quantity
                     }
