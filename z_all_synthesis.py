@@ -56,6 +56,7 @@ class Metriques(ModelSQL, ModelView):
     __name__ = "ventes.metriques"
 
     nbr_factures_assurance = fields.Integer("Nombre de Factures Assurance")
+    nbr_factures_normales = fields.Integer("Nombre de Factures Normales")
     nbr_factures_postees = fields.Integer("Nombre de Factures Postées")
     nbr_factures_payees = fields.Integer("Nombre de Factures Payées")
     nbr_factures_creditees = fields.Integer("Nombre de Factures Créditées")

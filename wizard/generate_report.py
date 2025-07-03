@@ -236,6 +236,7 @@ class GenerateResultsReports(Wizard):
         Factures = Invoices.search([('invoice_date', '>=', start_date), ('invoice_date', '<=', end_date), ('state', 'in', ['paid', 'posted'])])
 
         nbr_factures_assurance = 0
+        nbr_factures_normales = 0
         nbr_factures_postees = 0
         nbr_factures_payees = 0
         nbr_factures_creditees = 0
@@ -258,6 +259,9 @@ class GenerateResultsReports(Wizard):
             if Facture.health_service and Facture.health_service.insurance_plan:
                 nbr_factures_assurance += 1
             
+            if Facture.health_service and not Facture.health_service.insurance_plan:
+                nbr_factures_normales += 1
+            
             if Facture.state == 'posted':
                 nbr_factures_postees += 1
             
@@ -270,6 +274,7 @@ class GenerateResultsReports(Wizard):
             'nbr_factures_postees': nbr_factures_postees,
             'nbr_factures_payees': nbr_factures_payees,
             'nbr_factures_creditees': nbr_factures_creditees,
+            'nbr_factures_normales' : nbr_factures_normales
         }
 
         Metriques.create([metriques_data])

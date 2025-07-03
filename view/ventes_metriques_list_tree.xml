@@ -4,4 +4,5 @@
     <field name="nbr_factures_postees"/>
     <field name="nbr_factures_payees"/>
     <field name="nbr_factures_creditees"/>
+    <field name="nbr_factures_normales"/>
 </tree>
