@@ -51,6 +51,8 @@ class Elements_Actualisations(ModelView):
     product = fields.Many2One("product.product", "Produit", help="Produit à synthétiser")
     all_product = fields.Boolean("Tous les produits", help="Synthèses de tous les produits vendus")
 
+    metriques = fields.Boolean("Valeurs Uniques", help="Valeurs Uniques Autour des Factures")
+
 
 class GenerateResultsReports(Wizard):
     'Generation des Rapports En Totalité'
@@ -59,7 +61,7 @@ class GenerateResultsReports(Wizard):
     start = StateView('elements.refresh.init',
         'z_all_synthesis.view_element_actualisation', [
             Button('Cancel', 'end', 'tryton-cancel'),
-            Button('Assurance Vente', 'actualisation_element', 'tryton-ok',
+            Button('Actualisation', 'actualisation_element', 'tryton-ok',
                 True),
             ])
     
@@ -73,7 +75,10 @@ class GenerateResultsReports(Wizard):
         if self.start.product and not self.start.all_product:
             self.is_product(self.start.date_debut, self.start.date_fin)
         elif self.start.all_product and not self.start.product:
-            self.is_all_product(self.start.date_debut, self.start.date_fin)            
+            self.is_all_product(self.start.date_debut, self.start.date_fin) 
+
+        if self.start.metriques:
+            self.is_metriques(self.start.date_debut, self.start.date_fin)          
         
         return 'end'
 
@@ -190,6 +195,7 @@ class GenerateResultsReports(Wizard):
                 listes_factures.remove(Facture.number)
 
         dict_assurance = {}
+        nbr_facture = Decimal(0)
         for facture_number in listes_factures:
             facture = Invoices.search([('number', '=', facture_number)], limit=1)
 
@@ -203,14 +209,70 @@ class GenerateResultsReports(Wizard):
 
             if assurance.id in dict_assurance:
                 dict_assurance[assurance.id]['total_vente'] += facture[0].montant_assurance
+                nbr_facture += 1
+                dict_assurance[assurance.id]['nb_facture'] = nbr_facture
             else:
                 dict_assurance[assurance.id] = {
                     'assurance_name': assurance.name,  # nom réel du champ Many2One
-                    'total_vente': facture[0].montant_assurance
+                    'total_vente': facture[0].montant_assurance,
+                    'nb_facture': 1  # Initialisation du nombre de factures
                 }
 
         list_of_save_elements = list(dict_assurance.values())
         Ventes_Assurance.create(list_of_save_elements)
+
+
+    def is_metriques(self, start_date, end_date):
+        """
+        This method is used to synthesize unique values around invoices
+        between the given start and end dates.
+        """
+
+        Metriques = Pool().get("ventes.metriques")
+        Metriques.delete(Metriques.search([]))
+
+        Invoices = Pool().get("account.invoice")
+
+        Factures = Invoices.search([('invoice_date', '>=', start_date), ('invoice_date', '<=', end_date), ('state', 'in', ['paid', 'posted'])])
+
+        nbr_factures_assurance = 0
+        nbr_factures_postees = 0
+        nbr_factures_payees = 0
+        nbr_factures_creditees = 0
+
+        listes_factures = []
+        for Facture in Factures:
+            if Facture.number not in listes_factures:
+                listes_factures.append(Facture.number)
+        
+        for Facture in Factures:
+            if Facture.reference in listes_factures:
+                nbr_factures_creditees += 1
+                listes_factures.remove(Facture.reference)
+                listes_factures.remove(Facture.number)
+
+
+        for Facture in listes_factures:
+            facture = Invoices.search([('number', '=', Facture)], limit=1)
+            Facture = facture[0]
+            if Facture.health_service and Facture.health_service.insurance_plan:
+                nbr_factures_assurance += 1
+            
+            if Facture.state == 'posted':
+                nbr_factures_postees += 1
+            
+            if Facture.state == 'paid':
+                nbr_factures_payees += 1
+                
+
+        metriques_data = {
+            'nbr_factures_assurance': nbr_factures_assurance,
+            'nbr_factures_postees': nbr_factures_postees,
+            'nbr_factures_payees': nbr_factures_payees,
+            'nbr_factures_creditees': nbr_factures_creditees,
+        }
+
+        Metriques.create([metriques_data])
 
 
     def syntheses_ventes(records, insurance=True):

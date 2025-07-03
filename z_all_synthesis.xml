@@ -54,5 +54,30 @@
             sequence="20"
             id="menu_act_syntheses_produits_tree"/>
 
+        <!-- METRIQUES -->
+
+        <record model="ir.ui.view" id="metriques_view_list2">
+            <field name="model">ventes.metriques</field>
+            <field name="type">tree</field>
+            <field name="name">ventes_metriques_list_tree</field>
+        </record>
+
+        <record model="ir.action.act_window" id="act_metriques_form2">
+         <field name="name">Métriques</field>
+         <field name="res_model">ventes.metriques</field>
+        </record>
+
+        <record model="ir.action.act_window.view" id="act_syntheses_metriques_form_view12">
+            <field name="sequence" eval="10"/>
+            <field name="view" ref="metriques_view_list2"/>
+            <field name="act_window" ref="act_metriques_form2"/>
+        </record>
+
+        <menuitem
+            parent="menu_rapport"
+            action="act_metriques_form2"
+            sequence="20"
+            id="menu_act_metriques_tree"/>
+
    </data>
 </tryton>

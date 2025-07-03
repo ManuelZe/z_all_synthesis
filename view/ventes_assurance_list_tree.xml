@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <tree>
-    <field name="assurance_name"/>
-    <field name="total_vente"/>
+    <field name="nbr_factures_assurance"/>
+    <field name="nbr_factures_postees"/>
+    <field name="nbr_factures_payees"/>
+    <field name="nbr_factures_creditees"/>
 </tree>

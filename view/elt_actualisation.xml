@@ -22,4 +22,10 @@
     <field name="product"/>
     <label name="all_product"/>
     <field name="all_product"/>
+
+    <separator string="Métriques" colspan="6"
+        id="elements_metriques"/>
+    <label name="metriques"/>
+    <field name="metriques"/>
+
 </form>
