@@ -79,5 +79,31 @@
             sequence="20"
             id="menu_act_metriques_tree"/>
 
+        
+        <!-- VALIDATIONS PAR SERVICE -->
+
+        <record model="ir.ui.view" id="validation_view_list2">
+            <field name="model">validations.services</field>
+            <field name="type">tree</field>
+            <field name="name">validation_service</field>
+        </record>
+
+        <record model="ir.action.act_window" id="act_validation_form2">
+         <field name="name">Validations</field>
+         <field name="res_model">validations.services</field>
+        </record>
+
+        <record model="ir.action.act_window.view" id="act_syntheses_validation_form_view12">
+            <field name="sequence" eval="10"/>
+            <field name="view" ref="validation_view_list2"/>
+            <field name="act_window" ref="act_validation_form2"/>
+        </record>
+
+        <menuitem
+            parent="menu_rapport"
+            action="act_validation_form2"
+            sequence="20"
+            id="menu_act_validation_tree"/>
+
    </data>
 </tryton>

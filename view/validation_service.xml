@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<tree>
+    <field name="service_name"/>
+    <field name="nbr_validate"/>
+    <field name="nbr_no_validate"/>
+    <field name="pourcentage"/>
+</tree>

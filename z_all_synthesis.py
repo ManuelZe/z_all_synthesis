@@ -61,6 +61,17 @@ class Metriques(ModelSQL, ModelView):
     nbr_factures_payees = fields.Integer("Nombre de Factures Payées")
     nbr_factures_creditees = fields.Integer("Nombre de Factures Créditées")
 
+
+class Validation_Services(ModelSQL, ModelView):
+    "Syntheses Des Validations Par Services"
+    __name__ = "validations.services"
+
+    service_name = fields.Char("Service", required=True)
+    nbr_validate = fields.Integer("Nombre Validé", required=True)
+    nbr_no_validate = fields.Integer("Nombre Non Validé", required=True)
+    pourcentage = fields.Float("Pourcentage", required=True)
+
+
 class Ventes_Assurances_Par_Mois(ModelSQL, ModelView):
     "Classement des ventes d'une seule assurance par mois"
     __name__ = "ventes.assurance.mois"

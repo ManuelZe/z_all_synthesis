@@ -28,4 +28,9 @@
     <label name="metriques"/>
     <field name="metriques"/>
 
+    <separator string="Validations" colspan="6"
+        id="elements_validations"/>
+    <label name="validation"/>
+    <field name="validation"/>
+
 </form>

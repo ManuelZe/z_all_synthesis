@@ -53,6 +53,8 @@ class Elements_Actualisations(ModelView):
 
     metriques = fields.Boolean("Valeurs Uniques", help="Valeurs Uniques Autour des Factures")
 
+    validation = fields.Boolean("Validation des Services", help="Synthèse des validations par services")
+
 
 class GenerateResultsReports(Wizard):
     'Generation des Rapports En Totalité'
@@ -78,7 +80,10 @@ class GenerateResultsReports(Wizard):
             self.is_all_product(self.start.date_debut, self.start.date_fin) 
 
         if self.start.metriques:
-            self.is_metriques(self.start.date_debut, self.start.date_fin)          
+            self.is_metriques(self.start.date_debut, self.start.date_fin)      
+
+        if self.start.validation:
+            self.is_validation(self.start.date_debut, self.start.date_fin)    
         
         return 'end'
 
@@ -106,6 +111,10 @@ class GenerateResultsReports(Wizard):
             if Facture.reference in listes_factures:
                 listes_factures.remove(Facture.reference)
                 listes_factures.remove(Facture.number)
+            else:
+                factures_ref = Invoices.search([('number', '=', Facture.reference)])
+                if factures_ref:
+                    listes_factures.remove(Facture.reference)
         
         if not self.start.product:
             return
@@ -152,6 +161,10 @@ class GenerateResultsReports(Wizard):
             if Facture.reference in listes_factures:
                 listes_factures.remove(Facture.reference)
                 listes_factures.remove(Facture.number)
+            else:
+                factures_ref = Invoices.search([('number', '=', Facture.reference)])
+                if factures_ref:
+                    listes_factures.remove(Facture.reference)
 
         dict_produit = {}
         for facture_number in listes_factures:
@@ -193,6 +206,10 @@ class GenerateResultsReports(Wizard):
             if Facture.reference in listes_factures:
                 listes_factures.remove(Facture.reference)
                 listes_factures.remove(Facture.number)
+            else:
+                factures_ref = Invoices.search([('number', '=', Facture.reference)])
+                if factures_ref:
+                    listes_factures.remove(Facture.reference)
 
         dict_assurance = {}
         nbr_facture = Decimal(0)
@@ -251,6 +268,11 @@ class GenerateResultsReports(Wizard):
                 nbr_factures_creditees += 1
                 listes_factures.remove(Facture.reference)
                 listes_factures.remove(Facture.number)
+            else:
+                factures_ref = Invoices.search([('number', '=', Facture.reference)])
+                if factures_ref:
+                    nbr_factures_creditees += 1
+                    listes_factures.remove(Facture.reference)
 
 
         for Facture in listes_factures:
@@ -279,6 +301,102 @@ class GenerateResultsReports(Wizard):
 
         Metriques.create([metriques_data])
 
+
+    def is_validation(self, start_date, end_date):
+        """
+        This method is used to synthesize the validation of services
+        between the given start and end dates.
+        """
+
+        Validation_Services = Pool().get("validations.services")
+        Validation_Services.delete(Validation_Services.search([]))
+
+        Validations_Examens = Pool().get("all_syntheses")
+        validations_Cotations = Pool().get("syntheses_cotation")
+
+        date_debut = datetime.combine(start_date, time.min)
+        date_fin = datetime.combine(end_date, time.max)
+
+        V_E = Validations_Examens.search([('date_emm', '>=',  date_debut), ('date_result', '<=', date_fin)])
+        V_C = validations_Cotations.search([('date_emm', '>=', date_debut), ('date_emm', '<=', date_fin)])
+
+        dict_elt = {}
+        nbr_validate_lab = 0
+        nbr_no_validate_lab = 0
+        pourcentage_lab = float(0)
+
+        nbr_validate_img = 0
+        nbr_no_validate_img = 0
+        pourcentage_img = float(0)
+
+        nbr_validate_exp = 0
+        nbr_no_validate_exp = 0
+        pourcentage_exp = float(0)
+
+        nbr_validate_cot = 0
+        nbr_no_validate_cot = 0
+        pourcentage_cot = float(0)
+
+        for elt in V_C:
+            if elt.correct :
+                nbr_validate_cot += 1
+            else :
+                nbr_no_validate_cot += 1
+        
+        for elt in V_E:
+            if elt.service_examen == "lab" :
+                if elt.correct:
+                    nbr_validate_lab += 1
+                else :
+                    nbr_no_validate_lab +=1 
+            if elt.service_examen == "img" :
+                if elt.correct:
+                    nbr_validate_img += 1
+                else :
+                    nbr_no_validate_img += 1
+            if elt.service_examen == 'exp' :
+                if elt.correct:
+                    nbr_validate_exp += 1
+                else:
+                    nbr_no_validate_exp += 1
+        
+        pourcentage_exp += nbr_validate_exp / (nbr_validate_exp + nbr_no_validate_exp)
+        pourcentage_img += nbr_validate_img / (nbr_validate_img + nbr_no_validate_img)
+        pourcentage_lab += nbr_validate_lab / (nbr_validate_lab + nbr_no_validate_lab)
+        pourcentage_cot += nbr_no_validate_cot / (nbr_validate_cot + nbr_no_validate_cot)
+
+        dict_elt["lab"]={
+            "service_name" : "Laboratoire",
+            "nbr_validate" : nbr_validate_lab,
+            "nbr_no_validate" : nbr_no_validate_lab,
+            "pourcentage" : pourcentage_lab
+        }
+
+        dict_elt["img"]={
+            "service_name" : "Imagerie",
+            "nbr_validate" : nbr_validate_img,
+            "nbr_no_validate" : nbr_no_validate_img,
+            "pourcentage" : pourcentage_img
+        }
+
+        dict_elt["exp"]={
+            "service_name" : "Exploration",
+            "nbr_validate" : nbr_validate_exp,
+            "nbr_no_validate" : nbr_no_validate_exp,
+            "pourcentage" : pourcentage_exp
+        }
+
+        dict_elt['cotation']={
+            "service_name" : "Cotation",
+            "nbr_validate" : nbr_validate_cot,
+            "nbr_no_validate" : nbr_no_validate_cot,
+            "pourcentage" : pourcentage_cot
+        }
+
+        list_of_save_elements = []
+        list_of_save_elements.extend(list(dict_elt.values()))
+
+        Validation_Services.create(list_of_save_elements)
 
     def syntheses_ventes(records, insurance=True):
         # Exemplaire de sortie de liste 

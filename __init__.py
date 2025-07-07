@@ -14,6 +14,7 @@ def register():
         generate_report.Elements_Actualisations,
         z_all_synthesis.Produits_Sur_Peride,
         z_all_synthesis.Metriques,
+        z_all_synthesis.Validation_Services,
         module='z_all_synthesis', type_='model')
     Pool.register(
         generate_report.GenerateResultsReports,
