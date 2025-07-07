@@ -318,7 +318,7 @@ class GenerateResultsReports(Wizard):
         date_fin = datetime.combine(end_date, time.max)
 
         V_E = Validations_Examens.search([('date_emm', '>=',  date_debut), ('date_result', '<=', date_fin)])
-        V_C = validations_Cotations.search([('date_emm', '>=', date_debut), ('date_emm', '<=', date_fin)])
+        V_C = validations_Cotations.search([('date_service', '>=', date_debut), ('date_service', '<=', date_fin)])
 
         dict_elt = {}
         nbr_validate_lab = 0
