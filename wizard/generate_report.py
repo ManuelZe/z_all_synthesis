@@ -363,7 +363,7 @@ class GenerateResultsReports(Wizard):
         pourcentage_exp += nbr_validate_exp / (nbr_validate_exp + nbr_no_validate_exp)
         pourcentage_img += nbr_validate_img / (nbr_validate_img + nbr_no_validate_img)
         pourcentage_lab += nbr_validate_lab / (nbr_validate_lab + nbr_no_validate_lab)
-        pourcentage_cot += nbr_no_validate_cot / (nbr_validate_cot + nbr_no_validate_cot)
+        pourcentage_cot += nbr_validate_cot / (nbr_validate_cot + nbr_no_validate_cot)
 
         dict_elt["lab"]={
             "service_name" : "Laboratoire",
