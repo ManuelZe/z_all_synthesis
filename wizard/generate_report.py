@@ -111,10 +111,12 @@ class GenerateResultsReports(Wizard):
             if Facture.reference in listes_factures:
                 listes_factures.remove(Facture.reference)
                 listes_factures.remove(Facture.number)
-            # else:
-            #     factures_ref = Invoices.search([('number', '=', Facture.reference)])
-            #     if factures_ref:
-            #         listes_factures.remove(Facture.reference)
+            else:
+                try :
+                    listes_factures.remove(Facture.reference)
+                    nbr_factures_creditees += 1
+                except ValueError:
+                    pass
         
         if not self.start.product:
             return
@@ -161,10 +163,12 @@ class GenerateResultsReports(Wizard):
             if Facture.reference in listes_factures:
                 listes_factures.remove(Facture.reference)
                 listes_factures.remove(Facture.number)
-            # else:
-            #     factures_ref = Invoices.search([('number', '=', Facture.reference)])
-            #     if factures_ref:
-            #         listes_factures.remove(Facture.reference)
+            else:
+                try :
+                    listes_factures.remove(Facture.reference)
+                    nbr_factures_creditees += 1
+                except ValueError:
+                    pass
 
         dict_produit = {}
         for facture_number in listes_factures:
@@ -206,10 +210,12 @@ class GenerateResultsReports(Wizard):
             if Facture.reference in listes_factures:
                 listes_factures.remove(Facture.reference)
                 listes_factures.remove(Facture.number)
-            # else:
-            #     factures_ref = Invoices.search([('number', '=', Facture.reference)])
-            #     if factures_ref:
-            #         listes_factures.remove(Facture.reference)
+            else:
+                try :
+                    listes_factures.remove(Facture.reference)
+                    nbr_factures_creditees += 1
+                except ValueError:
+                    pass
 
         dict_assurance = {}
         nbr_facture = Decimal(0)
@@ -268,11 +274,14 @@ class GenerateResultsReports(Wizard):
                 nbr_factures_creditees += 1
                 listes_factures.remove(Facture.reference)
                 listes_factures.remove(Facture.number)
-            # else:
-            #     factures_ref = Invoices.search([('number', '=', Facture.reference)])
-            #     if factures_ref:
-            #         nbr_factures_creditees += 1
-            #         listes_factures.remove(Facture.reference)
+            else:
+                factures_ref = Invoices.search([('number', '=', Facture.reference)])
+                if factures_ref:
+                    try :
+                        listes_factures.remove(Facture.reference)
+                        nbr_factures_creditees += 1
+                    except ValueError:
+                        pass
 
 
         for Facture in listes_factures:
