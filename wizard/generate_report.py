@@ -601,7 +601,7 @@ class GenerateResultsReports(Wizard):
             # -----------------------
             # 3. CALCUL DES PATIENTS UNIQUES
             # -----------------------
-            patients_set = set()
+            dict_tarifaire = {}
 
             for numero in liste_nums:
 
@@ -613,16 +613,29 @@ class GenerateResultsReports(Wizard):
 
                 if f.party.sale_price_list == None:
                     continue
-                if f.party.sale_price_list.id == self.start.tarifaire.id:
-                    patients_set.add(f.party.id)
 
-            # -----------------------
-            # 4. ENREGISTREMENT DU RÉSULTAT
-            # -----------------------
-            PatientsTarifaire.create([{
-                "tarifaire_name": tarifaire,
-                "nbr_patients": len(patients_set),
-            }])
+                tarifaire_id = f.party.sale_price_list.id
+
+                # Initialiser si nécessaire
+                if tarifaire_id not in dict_tarifaire:
+                    dict_tarifaire[tarifaire_id] = {
+                        'tarifaire_name': f.party.sale_price_list,     # Many2One accepté dans create()
+                        'patients_set': set(),              # on stocke les patients uniques
+                    }
+
+                # Ajouter patient
+                dict_tarifaire[tarifaire_id]['patients_set'].add(f.party.id)
+        # -----------------------
+        # 4. ENREGISTREMENT DU RÉSULTAT
+        # -----------------------
+        save_list = []
+        for item in dict_tarifaire.values():
+            save_list.append({
+                'tarifaire_name': item['tarifaire_name'],
+                'nbr_patients': len(item['patients_set'])
+            })
+
+        PatientsTarifaire.create(save_list)
 
         return True
 
