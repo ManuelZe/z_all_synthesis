@@ -516,7 +516,7 @@ class GenerateResultsReports(Wizard):
         nbr_patients = set()
         for facture_number in listes_factures:
             facture = Invoices.search([('number', '=', facture_number)], limit=1)
-            if facture[0].patient.sale_price_list.id == self.start.tarifaire.id:
+            if facture[0].party.sale_price_list.id == self.start.tarifaire.id:
                 nbr_patients.add(facture[0].party.id)
 
         elt = {
@@ -595,7 +595,7 @@ class GenerateResultsReports(Wizard):
                 facture = Invoice.search([("number", "=", numero)], limit=1)
                 f = facture[0]
 
-                if f.patient.sale_price_list.id == self.start.tarifaire.id:
+                if f.party.sale_price_list.id == self.start.tarifaire.id:
                     patients_set.add(f.party.id)
 
             # -----------------------
