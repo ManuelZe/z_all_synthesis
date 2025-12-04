@@ -515,9 +515,19 @@ class GenerateResultsReports(Wizard):
 
         nbr_patients = set()
         for facture_number in listes_factures:
-            facture = Invoices.search([('number', '=', facture_number)], limit=1)
-            if facture[0].party.sale_price_list == None:
-                pass
+
+            facture = Invoices.search([
+                ('number', '=', facture_number)
+            ], limit=1)
+
+            if not facture:
+                continue
+
+            f = facture[0]
+
+            if not f.party.sale_price_list:
+                continue
+
             if facture[0].party.sale_price_list.id == self.start.tarifaire.id:
                 nbr_patients.add(facture[0].party.id)
 
@@ -594,11 +604,15 @@ class GenerateResultsReports(Wizard):
             patients_set = set()
 
             for numero in liste_nums:
+
                 facture = Invoice.search([("number", "=", numero)], limit=1)
+                if not facture:
+                    continue
+
                 f = facture[0]
 
                 if f.party.sale_price_list == None:
-                    pass
+                    continue
                 if f.party.sale_price_list.id == self.start.tarifaire.id:
                     patients_set.add(f.party.id)
 
