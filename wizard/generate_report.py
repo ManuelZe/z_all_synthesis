@@ -488,7 +488,9 @@ class GenerateResultsReports(Wizard):
 
         Invoices = Pool().get("account.invoice")
 
-        Factures = Invoices.search([('invoice_date', '>=', start_date), ('invoice_date', '<=', end_date), ('state', 'in', ['paid', 'posted']), ("party.sale_price_list", "=", self.start.tarifaire)])
+        # Factures = Invoices.search([('invoice_date', '>=', start_date), ('invoice_date', '<=', end_date), ('state', 'in', ['paid', 'posted']), ("party.sale_price_list", "=", self.start.tarifaire)])
+
+        Factures = Invoices.search([('invoice_date', '>=', start_date), ('invoice_date', '<=', end_date), ('state', 'in', ['paid', 'posted'])])
 
         listes_factures = []
         for Facture in Factures:
@@ -514,7 +516,7 @@ class GenerateResultsReports(Wizard):
         nbr_patients = set()
         for facture_number in listes_factures:
             facture = Invoices.search([('number', '=', facture_number)], limit=1)
-            if facture[0].price_list.id == self.start.tarifaire.id:
+            if facture[0].patient.sale_price_list.id == self.start.tarifaire.id:
                 nbr_patients.add(facture[0].party.id)
 
         elt = {
@@ -527,7 +529,7 @@ class GenerateResultsReports(Wizard):
         return True
 
 
-    def compute_patients_per_tarifaire(start_date, end_date):
+    def compute_patients_per_tarifaire(self, start_date, end_date):
         """
         Calcule le nombre total de patients pour CHAQUE tarifaire (price_list)
         sur une période donnée, puis enregistre les résultats dans
@@ -553,7 +555,6 @@ class GenerateResultsReports(Wizard):
                 ("invoice_date", ">=", start_date),
                 ("invoice_date", "<=", end_date),
                 ("state", "in", ["paid", "posted"]),
-                ("party.sale_price_list", "=", tarifaire),
             ])
 
             # -----------------------
@@ -594,7 +595,7 @@ class GenerateResultsReports(Wizard):
                 facture = Invoice.search([("number", "=", numero)], limit=1)
                 f = facture[0]
 
-                if f.price_list and f.price_list.id == tarifaire.id:
+                if f.patient.sale_price_list.id == self.start.tarifaire.id:
                     patients_set.add(f.party.id)
 
             # -----------------------
