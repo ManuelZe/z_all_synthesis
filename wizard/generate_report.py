@@ -541,7 +541,7 @@ class GenerateResultsReports(Wizard):
         return True
 
 
-    def compute_patients_per_tarifaire(self, start_date, end_date):
+    def is_all_tarifaire(self, start_date, end_date):
         """
         Calcule le nombre total de patients pour CHAQUE tarifaire (price_list)
         sur une période donnée, puis enregistre les résultats dans
