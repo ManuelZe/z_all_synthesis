@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <form>
     <separator string="Remplissez les informations Nécessaires."
-        colspan="4" id="test_ask_element_actualize"/>
+        colspan="12" id="test_ask_element_actualize"/>
     <newline/>
     <separator string="Dates (Important)" colspan="6"
         id="elements_dates"/>
@@ -32,5 +32,12 @@
         id="elements_validations"/>
     <label name="validation"/>
     <field name="validation"/>
+
+    <separator string="Nombres de patients par Tarifaire" colspan="6"
+        id="elements_dates"/>
+    <label name="tarifaire"/>
+    <field name="tarifaire"/>
+    <label name="all_tarifaire"/>
+    <field name="all_tarifaire"/>
 
 </form>

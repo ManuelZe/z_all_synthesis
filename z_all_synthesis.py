@@ -42,13 +42,21 @@ class Classement_Assurance_vente(ModelSQL, ModelView):
     nb_facture = fields.Integer("Nombre de Factures")
 
 
-class Produits_Sur_Peride(ModelSQL, ModelView):
+class Produits_Sur_Periode(ModelSQL, ModelView):
     "Classement des produits vendus sur une période"
     __name__ = "ventes.produits.periode"
 
     produit_name = fields.Many2One("product.product", "Produit", required=True)
     nbr = fields.Integer("Nombre de ventes", required=True)
     total_vente = fields.Float("Total des ventes", required=True)
+
+
+class Nombre_Patients_Par_Tarifaire(ModelSQL, ModelView):
+    "Nombre de patients par tarifaire"
+    __name__ = "patients.tarifaire"
+
+    tarifaire_name = fields.Many2One("product.price_list", "Tarifaire", required=True)
+    nbr_patients = fields.Integer("Nombre de patients", required=True)
 
 
 class Metriques(ModelSQL, ModelView):

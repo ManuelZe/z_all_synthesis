@@ -105,5 +105,31 @@
             sequence="20"
             id="menu_act_validation_tree"/>
 
+
+        <!-- PATIENTS NOMBRE PAR TARIFAIRE -->
+
+        <record model="ir.ui.view" id="patients_tarifaire_view_list2">
+            <field name="model">patients.tarifaire</field>
+            <field name="type">tree</field>
+            <field name="name">patients_tarifaire_list_tree</field>
+        </record>
+
+        <record model="ir.action.act_window" id="act_patients_tarifaire_form2">
+         <field name="name">Patients par Tarifaire</field>
+         <field name="res_model">patients.tarifaire</field>
+        </record>
+
+        <record model="ir.action.act_window.view" id="act_syntheses_patients_tarifaire_form_view12">
+            <field name="sequence" eval="10"/>
+            <field name="view" ref="patients_tarifaire_view_list2"/>
+            <field name="act_window" ref="act_patients_tarifaire_form2"/>
+        </record>
+
+        <menuitem
+            parent="menu_rapport"
+            action="act_patients_tarifaire_form2"
+            sequence="20"
+            id="menu_act_patients_tarifaire_tree"/>
+
    </data>
 </tryton>

@@ -48,6 +48,9 @@ class Elements_Actualisations(ModelView):
 
     vente_assurance = fields.Boolean("Ventes Par Assurances", help="Syntheses des Ventes par Assurances")
 
+    tarifaire = fields.Many2One("product.price_list", "Tarifaire", help="Nombre de patients pour un tarifaire. Ceci ne se base que sur des factures postées et payées. Tarifaire à synthétiser")
+    all_tarifaire = fields.Boolean("Tous les tarifaires", help="Nombre de patients pour un tarifaire. Ceci ne se base que sur des factures postées et payées. Synthèses de tous les tarifaires utilisés")
+
     product = fields.Many2One("product.product", "Produit", help="Produit à synthétiser")
     all_product = fields.Boolean("Tous les produits", help="Synthèses de tous les produits vendus")
 
@@ -73,6 +76,11 @@ class GenerateResultsReports(Wizard):
 
         if self.start.vente_assurance:
             self.is_vente_assurance(self.start.date_debut, self.start.date_fin)
+
+        if self.start.tarifaire and not self.start.all_tarifaire:
+            self.is_tarifaire(self.start.date_debut, self.start.date_fin)
+        elif self.start.all_tarifaire and not self.start.tarifaire:
+            self.is_all_tarifaire(self.start.date_debut, self.start.date_fin)
 
         if self.start.product and not self.start.all_product:
             self.is_product(self.start.date_debut, self.start.date_fin)
@@ -424,6 +432,7 @@ class GenerateResultsReports(Wizard):
 
         Validation_Services.create(list_of_save_elements)
 
+
     def syntheses_ventes(records, insurance=True):
         # Exemplaire de sortie de liste 
         # elements2 = ["total_amount", "montant_assurance", "Remise",  "montant_patient-amount_to_pay", "montant_patient", "amount_to_pay"]
@@ -462,3 +471,51 @@ class GenerateResultsReports(Wizard):
         ])
         
         return elements
+    
+
+    def is_tarifaire(self, start_date, end_date):
+        """
+        CETTE MÉTHODE EST UTILISÉE POUR AVOIR LE NOMBRE DE PATIENT SUR UNE PÉRIODE DONNÉE
+        AYANT FAIT LA COMPAGNE SELECTIONNÉE
+        """
+
+        Patients_Tarifaire = Pool().get("patients.tarifaire")
+        Patients_Tarifaire.delete(Patients_Tarifaire.search([]))
+
+        Invoices = Pool().get("account.invoice")
+
+        Factures = Invoices.search([('invoice_date', '>=', start_date), ('invoice_date', '<=', end_date), ('state', 'in', ['paid', 'posted']), ("party.sale_price_list.name", "=", self.start.tarifaire.name)])
+
+        listes_factures = []
+        for Facture in Factures:
+            if Facture.number not in listes_factures:
+                listes_factures.append(Facture.number)
+        
+        for Facture in Factures:
+            if Facture.reference in listes_factures:
+                listes_factures.remove(Facture.reference)
+                try :
+                    listes_factures.remove(Facture.number)
+                except ValueError:
+                    pass
+            else:
+                factures_ref = Invoices.search([('number', '=', Facture.reference)])
+                if factures_ref:
+                    try :
+                        listes_factures.remove(Facture.reference)
+                        nbr_factures_creditees += 1
+                    except ValueError:
+                        pass
+
+        nbr_patients = set()
+        for facture_number in listes_factures:
+            facture = Invoices.search([('number', '=', facture_number)], limit=1)
+            if facture[0].price_list.id == self.start.tarifaire.id:
+                nbr_patients.add(facture[0].party.id)
+
+        elt = {
+            'tarifaire_name': self.start.tarifaire,
+            'nbr_patients': len(nbr_patients)
+        }
+
+        Patients_Tarifaire.create([elt])
