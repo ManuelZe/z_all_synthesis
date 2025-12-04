@@ -203,6 +203,8 @@ class GenerateResultsReports(Wizard):
 
         list_of_save_elements = list(dict_produit.values())
         Produits_Sur_Peride.create(list_of_save_elements)
+
+        return True
     
 
     def is_vente_assurance(self, start_date, end_date):
@@ -432,6 +434,8 @@ class GenerateResultsReports(Wizard):
 
         Validation_Services.create(list_of_save_elements)
 
+        return True
+
 
     def syntheses_ventes(records, insurance=True):
         # Exemplaire de sortie de liste 
@@ -476,7 +480,7 @@ class GenerateResultsReports(Wizard):
     def is_tarifaire(self, start_date, end_date):
         """
         CETTE MÉTHODE EST UTILISÉE POUR AVOIR LE NOMBRE DE PATIENT SUR UNE PÉRIODE DONNÉE
-        AYANT FAIT LA COMPAGNE SELECTIONNÉE
+        AYANT FAIT LA CAMPAGNE SELECTIONNÉE
         """
 
         Patients_Tarifaire = Pool().get("patients.tarifaire")
@@ -484,7 +488,7 @@ class GenerateResultsReports(Wizard):
 
         Invoices = Pool().get("account.invoice")
 
-        Factures = Invoices.search([('invoice_date', '>=', start_date), ('invoice_date', '<=', end_date), ('state', 'in', ['paid', 'posted']), ("party.sale_price_list.name", "=", self.start.tarifaire.name)])
+        Factures = Invoices.search([('invoice_date', '>=', start_date), ('invoice_date', '<=', end_date), ('state', 'in', ['paid', 'posted']), ("party.sale_price_list", "=", self.start.tarifaire.id)])
 
         listes_factures = []
         for Facture in Factures:
@@ -519,3 +523,88 @@ class GenerateResultsReports(Wizard):
         }
 
         Patients_Tarifaire.create([elt])
+
+        return True
+
+
+    def compute_patients_per_tarifaire(start_date, end_date):
+        """
+        Calcule le nombre total de patients pour CHAQUE tarifaire (price_list)
+        sur une période donnée, puis enregistre les résultats dans
+        patients.tarifaire.
+        """
+
+        Invoice = Pool().get("account.invoice")
+        PriceList = Pool().get("product.price_list")
+        PatientsTarifaire = Pool().get("patients.tarifaire")
+
+        # Reset table
+        PatientsTarifaire.delete(PatientsTarifaire.search([]))
+
+        # Récupérer tous les tarifaires existants
+        tarifaires = PriceList.search([])
+
+        for tarifaire in tarifaires:
+
+            # -----------------------
+            # 1. FACTURES DU TARIFAIRE
+            # -----------------------
+            factures = Invoice.search([
+                ("invoice_date", ">=", start_date),
+                ("invoice_date", "<=", end_date),
+                ("state", "in", ["paid", "posted"]),
+                ("party.sale_price_list", "=", tarifaire.id),
+            ])
+
+            # -----------------------
+            # 2. LISTE DES NUMÉROS UNIQUES (anti doublons + crédit/débit)
+            # -----------------------
+            liste_nums = []
+            for f in factures:
+                if f.number not in liste_nums:
+                    liste_nums.append(f.number)
+
+            # Gestion des références croisées (crédit/débit)
+            for f in factures:
+                # Cas où la référence existe dans la liste → facture créditée ou annulée
+                if f.reference in liste_nums:
+                    try:
+                        liste_nums.remove(f.reference)
+                    except ValueError:
+                        pass
+                    try:
+                        liste_nums.remove(f.number)
+                    except ValueError:
+                        pass
+                else:
+                    # Si la référence correspond à une facture existante, supprimer
+                    fact_ref = Invoice.search([("number", "=", f.reference)], limit=1)
+                    if fact_ref:
+                        try:
+                            liste_nums.remove(f.reference)
+                        except ValueError:
+                            pass
+
+            # -----------------------
+            # 3. CALCUL DES PATIENTS UNIQUES
+            # -----------------------
+            patients_set = set()
+
+            for numero in liste_nums:
+                facture = Invoice.search([("number", "=", numero)], limit=1)
+                f = facture[0]
+
+                if f.price_list and f.price_list.id == tarifaire.id:
+                    patients_set.add(f.party.id)
+
+            # -----------------------
+            # 4. ENREGISTREMENT DU RÉSULTAT
+            # -----------------------
+            PatientsTarifaire.create([{
+                "tarifaire_name": tarifaire,
+                "nbr_patients": len(patients_set),
+            }])
+
+        return True
+
+
