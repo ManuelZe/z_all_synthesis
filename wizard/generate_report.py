@@ -488,7 +488,7 @@ class GenerateResultsReports(Wizard):
 
         Invoices = Pool().get("account.invoice")
 
-        Factures = Invoices.search([('invoice_date', '>=', start_date), ('invoice_date', '<=', end_date), ('state', 'in', ['paid', 'posted']), ("party.sale_price_list", "=", self.start.tarifaire.id)])
+        Factures = Invoices.search([('invoice_date', '>=', start_date), ('invoice_date', '<=', end_date), ('state', 'in', ['paid', 'posted']), ("party.sale_price_list", "=", self.start.tarifaire)])
 
         listes_factures = []
         for Facture in Factures:
@@ -553,7 +553,7 @@ class GenerateResultsReports(Wizard):
                 ("invoice_date", ">=", start_date),
                 ("invoice_date", "<=", end_date),
                 ("state", "in", ["paid", "posted"]),
-                ("party.sale_price_list", "=", tarifaire.id),
+                ("party.sale_price_list", "=", tarifaire),
             ])
 
             # -----------------------
