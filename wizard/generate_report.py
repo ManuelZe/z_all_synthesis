@@ -488,49 +488,65 @@ class GenerateResultsReports(Wizard):
 
         Invoices = Pool().get("account.invoice")
 
-        # Factures = Invoices.search([('invoice_date', '>=', start_date), ('invoice_date', '<=', end_date), ('state', 'in', ['paid', 'posted']), ("party.sale_price_list", "=", self.start.tarifaire)])
+        # -----------------------------
+        # 1. Chargement des factures (une seule fois)
+        # -----------------------------
+        Factures = Invoices.search([
+            ('invoice_date', '>=', start_date),
+            ('invoice_date', '<=', end_date),
+            ('state', 'in', ['paid', 'posted'])
+        ])
 
-        Factures = Invoices.search([('invoice_date', '>=', start_date), ('invoice_date', '<=', end_date), ('state', 'in', ['paid', 'posted'])])
+        # -----------------------------
+        # 2. Utilisation d’un SET → O(1)
+        # -----------------------------
+        listes_factures = set()
+        for Facture in Factures:
+            listes_factures.add(Facture.number)
 
-        listes_factures = []
+        # -----------------------------
+        # 3. Seconde passe : suppression des factures créditées
+        # -----------------------------
+        # (on évite les re-search)
+        ref_map = {f.number: f for f in Factures}
+
         for Facture in Factures:
-            if Facture.number not in listes_factures:
-                listes_factures.append(Facture.number)
-        
-        for Facture in Factures:
-            if Facture.reference in listes_factures:
-                listes_factures.remove(Facture.reference)
-                try :
-                    listes_factures.remove(Facture.number)
-                except ValueError:
-                    pass
+
+            reference = Facture.reference
+
+            if reference in listes_factures:
+                listes_factures.discard(reference)
+                listes_factures.discard(Facture.number)
             else:
-                factures_ref = Invoices.search([('number', '=', Facture.reference)])
+                factures_ref = ref_map.get(reference)
                 if factures_ref:
-                    try :
-                        listes_factures.remove(Facture.reference)
-                        nbr_factures_creditees += 1
-                    except ValueError:
-                        pass
+                    listes_factures.discard(reference)
 
+        # -----------------------------
+        # 4. Calcul des patients uniques
+        # -----------------------------
         nbr_patients = set()
+
         for facture_number in listes_factures:
 
-            facture = Invoices.search([
-                ('number', '=', facture_number)
-            ], limit=1)
-
+            # Récupération optimisée via ref_map
+            facture = ref_map.get(facture_number)
             if not facture:
                 continue
 
-            f = facture[0]
+            f = facture
 
+            # évite None.id
             if not f.party.sale_price_list:
                 continue
 
-            if facture[0].party.sale_price_list.id == self.start.tarifaire.id:
-                nbr_patients.add(facture[0].party.id)
+            # pas de changement de variable
+            if f.party.sale_price_list.id == self.start.tarifaire.id:
+                nbr_patients.add(f.party.id)
 
+        # -----------------------------
+        # 5. Sauvegarde finale
+        # -----------------------------
         elt = {
             'tarifaire_name': self.start.tarifaire,
             'nbr_patients': len(nbr_patients)
@@ -539,6 +555,7 @@ class GenerateResultsReports(Wizard):
         Patients_Tarifaire.create([elt])
 
         return True
+
 
 
     def is_all_tarifaire(self, start_date, end_date):
